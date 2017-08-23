@@ -1,0 +1,121 @@
+import os
+import shutil
+
+# www.scons.org script files for COSMO computations using both MOPAC and GAMESS
+
+# Use "nohup" to run from ssh and keep running after logout
+
+env = Environment()
+
+env.AppendENVPath('PATH', '/home/u/rpseng/bin')
+
+env['ENV']['USER'] = os.environ['USER']
+env['ENV']['HOME'] = os.environ['HOME']
+
+# GAMESS keys file stuff
+keys = 'keys.gamess'
+keys_p1 = 'keys_p1.gamess'
+keys_m1 = 'keys_m1.gamess'
+# creating the charge files
+file = open(keys,'r')
+fileContents = file.read()
+file.close()
+file = open(keys_p1,'w')
+file.write(fileContents + ' $CONTRL ICHARG=+1 $END')
+file.close()
+file = open(keys_m1,'w')
+file.write(fileContents + ' $CONTRL ICHARG=-1 $END')
+file.close()
+
+# Gamess stuff
+babelgam = Builder(action = 'babel -i mol $SOURCE -o gamin -xf keys.gamess $TARGET',
+                     suffix = '.inp', single_source=True)
+babelgam_p1 = Builder(action = 'babel -i mol $SOURCE -o gamin -xf keys.gamess_p1 $TARGET',
+                     suffix = '.inp', single_source=True)
+babelgam_m1 = Builder(action = 'babel -i mol $SOURCE -o gamin -xf keys.gamess_m1 $TARGET',
+                     suffix = '.inp', single_source=True)
+babelgampcm = Builder(action = 'babel -i mol $SOURCE -o gamin -xf keys.gamess.pcm $TARGET',
+                     suffix = '.pcm.inp', single_source=True)
+babelgampcm_m1 = Builder(action = 'babel -i mol $SOURCE -o gamin -xf keys.gamess.pcm_m1 $TARGET',
+                     suffix = '.pcm.inp', single_source=True)
+babelgampcm_p1 = Builder(action = 'babel -i mol $SOURCE -o gamin -xf keys.gamess.pcm_p1 $TARGET',
+                     suffix = '.pcm.inp', single_source=True)
+# Gamess also produces a .dat file
+def gamess_targets(target, source, env):
+           target.append('$HOME/src/gamess/$TARGET.dat')
+           return target, source
+gamess = Builder(action = os.environ['HOME'] + '/src/gamess/rungms $SOURCE > $TARGET', suffix = '.gout',
+	single_source=True) # , emitter = gamess_targets)
+env.Append(BUILDERS = {'BabelGam' : babelgam})
+env.Append(BUILDERS = {'BabelGam_m1' : babelgam_m1})
+env.Append(BUILDERS = {'BabelGam_p1' : babelgam_p1})
+env.Append(BUILDERS = {'BabelGamPCM' : babelgampcm})
+env.Append(BUILDERS = {'BabelGamPCM_m1' : babelgampcm_m1})
+env.Append(BUILDERS = {'BabelGamPCM_p1' : babelgampcm_p1})
+env.Append(BUILDERS = {'Gamess' : gamess})
+
+# files
+molfiles = Glob('*.mol')
+files = []
+files_p1 = []
+files_m1 = []
+for fi in molfiles :
+	if str(fi).endswith("+1.mol") :
+		files_p1.append(fi)
+	elif str(fi).endswith("-1.mol") :
+		files_m1.append(fi)
+	else :
+		files.append(fi)
+
+# Build all files for Gamess
+# Delete all DAT files, otherwise gamess will stop
+# delAction = Delete(Glob(os.environ['HOME'] + '/src/gamess/tmp/*.dat'))
+delAction = Delete(Glob(os.environ['HOME'] + '/src/gamess/scr/*.dat'))
+Execute(delAction)
+
+# Convert mol files to gamess input
+inps = env.BabelGam(files)
+env.Depends(inps, ['keys.gamess'])
+# env.Depends(inps, delAction)
+# process files with gamess
+gamessBuild = env.Gamess(inps)
+env.Alias('gamess', gamessBuild)
+
+# Creating script to be used by SGE
+# rungms = '/home/u/rpseng/gamess/rungms'
+# rungms = '/home/rafael/src/gamess/rungms'
+rungms = '/home/rpgerber/src/gamess/rungms'
+basedir = os.path.basename(os.path.abspath('.'))
+
+file = open('qsub.sh','w')
+file.write('#!/bin/bash\n\n')
+
+file.write('\n#$ -t 1-' + str(len(molfiles)))
+file.write('\n#$ -N ' + basedir)
+file.write("""
+#$ -cwd
+#$ -q s_thin_day.q
+#$ -tc 48
+""")
+file.write('#$ -o ' + basedir + '$TASK_ID.gout\n\n')
+
+file.write(basedir + '$SGE_TASK_ID.gout\n')
+file.write('rm -f /dados/rpseng/' + basedir + '$SGE_TASK_ID.dat\n')
+file.write('/home/u/rpseng/gamess/rungms ' + basedir + '$SGE_TASK_ID.inp')
+file.close()
+
+# copy all files as array files
+file = open('mv.sh','w')
+i = 1
+inpcopies = []
+for fi in molfiles :
+  name, extension = os.path.splitext(str(fi))
+  inpcopies += env.InstallAs(source = name + '.inp', target = basedir + str(i) + '.inp')
+  file.write('mv -f ' + basedir + str(i) + '.gout ' + name + '.gout\n')
+  i = i+1
+file.close()
+
+env.Depends(inpcopies, inps)
+env.Alias('inps', inpcopies)
+
+env.Default(gamessBuild)

@@ -1,0 +1,83 @@
+import os
+
+# www.scons.org script files for COSMO computations using both MOPAC and GAMESS
+
+# Use "nohup" to run from ssh and keep running after logout
+
+# Configuration, can be changed by command line arguments like:
+# $ scons molfiles=../molbig variant=RM1
+molfiles = ARGUMENTS.get('molfiles', '../molfiles/')
+variant = ARGUMENTS.get('variant', 'RM1')
+output = ARGUMENTS.get('output', '.cos')
+
+# the tmp directory for this build
+tmpdir = 'tmp/' + variant + '/' + os.path.basename(os.path.dirname(molfiles))
+
+env = Environment()
+
+env['ENV']['USER'] = os.environ['USER']
+env['ENV']['HOME'] = os.environ['HOME']
+
+# MOPAC keys file stuff
+keys = 'keys.mopac_' + variant
+keys_p1 = 'keys_p1.mopac_' + variant
+keys_m1 = 'keys_m1.mopac_' + variant
+# creating the charge files
+file = open(keys,'r')
+fileContents = file.readline()
+file.close()
+file = open(keys_p1,'w')
+file.write('CHARGE=1 ' + fileContents)
+file.close()
+file = open(keys_m1,'w')
+file.write('CHARGE=-1 ' + fileContents)
+file.close()
+
+
+mol2mop = Builder(action = 'babel -i mol $SOURCE -o mopin -xf ' + keys + ' $TARGET',
+                     suffix = '.mop', single_source=True)
+mol2mop_p1 = Builder(action = 'babel -i mol $SOURCE -o mopin -xf ' + keys_p1 + ' $TARGET',
+                     suffix = '.mop', single_source=True)
+mol2mop_m1 = Builder(action = 'babel -i mol $SOURCE -o mopin -xf ' + keys_m1 + ' $TARGET',
+                     suffix = '.mop', single_source=True)
+mopac = Builder(action = 'mopac $SOURCE', suffix = output, single_source=True)
+mopacopt = Builder(action = 'mopac $SOURCE', suffix = '.optmop.out', single_source=True)
+env.Append(BUILDERS = {'Mol2Mop' : mol2mop})
+env.Append(BUILDERS = {'Mol2Mop_p1' : mol2mop_p1})
+env.Append(BUILDERS = {'Mol2Mop_m1' : mol2mop_m1})
+env.Append(BUILDERS = {'Mopac' : mopac})
+env.Append(BUILDERS = {'MopacOpt' : mopacopt})
+
+
+# files
+env.VariantDir(tmpdir, molfiles)
+molfiles = Glob(tmpdir + '/*.mol')
+files = []
+files_p1 = []
+files_m1 = []
+for fi in molfiles :
+	if str(fi).endswith("+1.mol") :
+		files_p1.append(fi)
+	elif str(fi).endswith("-1.mol") :
+		files_m1.append(fi)
+	else :
+		files.append(fi)
+
+# Build all files for Mopac
+mops = env.Mol2Mop(files)
+mops_p1 = env.Mol2Mop_p1(files_p1)
+mops_m1 = env.Mol2Mop_m1(files_m1)
+# dependencies on keys files
+env.Depends(mops, keys)
+env.Depends(mops_p1, keys_p1)
+env.Depends(mops_m1, keys_m1)
+allmops = mops
+allmops += mops_p1
+allmops += mops_m1
+mopacBuild = env.Mopac(allmops)
+# env.Default('mopac')
+install = env.Install(variant, mopacBuild)
+install += env.Install(variant, molfiles)
+env.Alias('mopac', install)
+env.Default(install)
+
