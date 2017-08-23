@@ -1,0 +1,9 @@
+  DEUTERIUM.mol	7782-39-0
+  NIST    06271311433D 1   1.00000    -1.17548
+Copyright by the U.S. Sec. Commerce on behalf of U.S.A. All rights reserved.
+  2  1  0  0  0  0  0  0  0  0999 V2000
+   -0.0254    0.0000    0.0000 H    0  0  0  0  0  0  0  0  0  0  0  0
+    0.7174    0.0000    0.0000 H    0  0  0  0  0  0  0  0  0  0  0  0
+  1  2  1  0
+M  ISO  2   1   2   2   2
+M  END

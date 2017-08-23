@@ -1,0 +1,12 @@
+  CARBONYL CHLOROFLUORIDE.mol	353-49-1
+  NIST    08031215073D 1   1.00000  -673.36047
+Copyright by the U.S. Sec. Commerce on behalf of U.S.A. All rights reserved.
+  4  3  0  0  0  0  0  0  0  0999 V2000
+   33.8928    0.9520    0.0000 Cl   0  0  0  0  0  0  0  0  0  0  0  0
+   32.4142    1.8934    0.0000 C    0  0  0  0  0  0  0  0  0  0  0  0
+   31.3699    1.0703    0.0000 F    0  0  0  0  0  0  0  0  0  0  0  0
+   32.3404    3.0713    0.0000 O    0  0  0  0  0  0  0  0  0  0  0  0
+  1  2  1  0
+  2  3  1  0
+  2  4  2  0
+M  END
