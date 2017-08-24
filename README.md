@@ -46,7 +46,7 @@ work on other similar systems.
 Regardless if you will use GAMESS or MOPAC,
 our provided instructions depend on the following packages:
 ```
-sudo apt-get install scons openbabel
+sudo apt-get install scons openbabel libiomp5
 ```
 
 ## License
