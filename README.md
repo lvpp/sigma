@@ -32,7 +32,7 @@ It can take a while until we process your request.
 
 ### Process your own molecules
 
-If you can't wait for us to process your molecues (or if you don't want to)
+If you can't wait for us to process your molecules (or if you don't want to)
 you can can **process** your own molecules.
 
 Just **clone** or download this repository and then
