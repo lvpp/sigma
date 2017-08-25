@@ -1,4 +1,4 @@
-package br.ufrgs.enq.lvpp.sigma;
+package br.ufrgs.enq.lvpp.sigma.file;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -9,56 +9,91 @@ import java.util.Scanner;
 
 /**
  * File shorter for *.gout files
+ * 
  * @author gbflores
- * @version 1.0.2
+ * @version 2.0.0
  */
 public class FileShorterGAMESS {
 
+	private String sourceFolder;
+	private String destinyFolder;
+	private String errorFolder;
+	private double timeToExecute = 0;
+
 	/**
-	 * @param fileName the file that will be shorter
+	 * @param sourcePath
+	 * @param destinyPath
+	 * @param errorPath
 	 */
-	public FileShorterGAMESS(String fileName) {
-		// destiny folder
-		String destString = "GAMESS_Output";
-		// destiny folder for files with problem (gout not complete)
-		String destStringError = "problem";
+	public FileShorterGAMESS(String sourcePath, String destinyPath, String errorPath) {
+
+		this.sourceFolder = Util.folder(sourcePath);
+		this.destinyFolder = Util.folder(destinyPath);
+		this.errorFolder = Util.folder(errorPath);
 		
-		File file = new File(fileName);
-		Scanner input;
-		PrintWriter writer;
-		
-		// first read to verify if the gout end with no problem
+		File destiny = new File(this.destinyFolder);
+		if (!destiny.exists())
+			destiny.mkdir();
+
+		File error = new File(this.errorFolder);
+		if (!error.exists())
+			error.mkdir();
+
+		File source = new File(this.sourceFolder);
+		if (source.exists())
+			for (String file : source.list())
+				shorter(file);
+
+		if (destiny.list().length == 0)
+			destiny.list();
+
+		if (error.list().length == 0)
+			error.delete();
+
+	}
+
+	/**
+	 * @return
+	 */
+	public double getCPUTimingInformation() {
+		return timeToExecute;
+	}
+
+	/**
+	 * @param fileName
+	 *            the file that will be shorter
+	 */
+	private void shorter(String fileName) {
+		double tempTime = 0;
+		String tmp = "";
+
 		try {
-			input = new Scanner(file);
+			File file = new File(sourceFolder + fileName);
+
+			Scanner input = new Scanner(file);
 			input.useLocale(Locale.US);
 
-			String path = file.getAbsolutePath().replace(file.getName(), "");
-			File destiny = new File(path + destString);
-			if (!destiny.exists())
-				destiny.mkdir();
-			File destinyError = new File(path + destStringError);
-			if (!destinyError.exists())
-				destinyError.mkdir();
-
-			String tmp = "";
 			boolean exitedGracefully = false;
 			while (input.hasNext()) {
 				tmp = input.nextLine();
+				if (tmp.contains("CPU timing information for all processes")) {
+					input.nextLine();
+					String s = input.nextLine();
+					String s2[] = s.split("= ");
+					tempTime = Double.parseDouble(s2[1]);
+				}
 				if (tmp.contains("exited gracefully")) {
 					exitedGracefully = true;
+					timeToExecute = +tempTime;
 					break;
 				}
 			}
 
-			if (exitedGracefully) {
-				writer = new PrintWriter(new FileWriter(destiny + "/" + file.getName()));
-			} else {
-				writer = new PrintWriter(new FileWriter(destinyError + "/" + file.getName()));
-			}
-
 			input.close();
 
-			// second read to short only files without problems
+			PrintWriter writer = new PrintWriter(
+					new FileWriter((exitedGracefully ? destinyFolder : errorFolder) + fileName));
+
 			input = new Scanner(file);
 			input.useLocale(Locale.US);
 
@@ -141,8 +176,6 @@ public class FileShorterGAMESS {
 			}
 			input.close();
 			writer.close();
-			if (destinyError.list().length == 0)
-				destinyError.delete();
 
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -150,75 +183,20 @@ public class FileShorterGAMESS {
 
 	}
 
-	/**Time to complete the calculus of GAMESS
-	 * @param fileName
-	 * @return time to compute the gout
-	 */
-	public double getTime(String fileName) {
-		File file = new File(fileName);
-		Scanner input;
-		double time = -1;
-		boolean exitedGracefully = false;
 
-		try {
-			input = new Scanner(file);
-			input.useLocale(Locale.US);
-
-			String tmp = "";
-			while (input.hasNext()) {
-				tmp = input.nextLine();
-				if (tmp.contains("exited gracefully")) {
-					exitedGracefully = true;
-					break;
-				}
-			}
-
-			input.close();
-			input = new Scanner(file);
-			input.useLocale(Locale.US);
-
-			while (input.hasNext()) {
-				tmp = input.nextLine();
-				if (tmp.contains("CPU timing information for all processes")) {
-					input.nextLine();
-					String s = input.nextLine();
-					String s2[] = s.split("= ");
-					time = Double.parseDouble(s2[1]);
-					break;
-				}
-			}
-
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		return exitedGracefully ? time : -1;
-	}
-
-	/** for each file in this folder, will verify if gout ends without problems,
+	/**
+	 * for each file in this folder, will verify if gout ends without problems,
 	 * if yes, will rewrite the file at "GAMESS_Output" folder;
+	 * 
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		
-		
-		
-		String path = "./";
-		File dir;
-		String[] files;
-		dir = new File(path);
-		files = dir.list();
-		for (int i = 0; i < files.length; i++) {
-			if (files[i].endsWith(".gout")) {
-				try {
-					new FileShorterGAMESS(path + files[i]);
-					System.out.println(files[i]);
-				} catch (Exception e) {
-					System.err.println(files[i]);
-				}
-			}
-		}
 
-		System.out.println("END GRACEFULLY");
+		// TODO review folders...
+		String sourcePath = "testTransfer/gout";
+		String destinyPath = "testTransfer/goutShort";
+		String errorPath = "testTransfer/gout3";
+		new FileShorterGAMESS(sourcePath, destinyPath, errorPath);
+
 	}
 }
