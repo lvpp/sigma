@@ -1,6 +1,6 @@
-## MOPAC INSTRUCTIONS
+# MOPAC INSTRUCTIONS
 
-# INSTALATION GUIDE
+## INSTALATION GUIDE
 
 **[Download](http://openmopac.net/downloads.html) MOPAC last version.**
 
@@ -36,7 +36,7 @@ sudo ln -s /usr/lib/libiomp5.so.5 /usr/lib/libiomp5.so
 ```
 sudo mopac "xxxxxxxxxxxxxxxx"
 ```
-# RUN MOPAC
+## RUN MOPAC
 ```
 scons variant=POA1_1.18 POA1_1.18/MOLECULE.cos
 ```
