@@ -2,6 +2,8 @@
 
 ## INSTALATION GUIDE
 
+This is a quick tutorial on how to install MOPAC on Ubuntu OS 2016.04 LTS
+
 **[Download](http://openmopac.net/downloads.html) MOPAC last version (2016).**
 
 **Create "/opt/mopac/" and extract MOPAC2016.exe on it**
