@@ -14,12 +14,12 @@ that folder. Make sure the final directory is called **/home/lvpp/gamess**, wher
 sudo apt-get install scons csh gfortran
 ```
 
-**Using a terminal, enther the GAMESS package folder and run the configuration script:**
+**Using a terminal, enter the GAMESS package folder and run the configuration script:**
 ```
 cd $HOME/src/gamess
 ./config
 ```
-This script will ask you several questions typical answers for a Ubuntu Linux Desktop are:
+This script will ask you several questions, typical answers for a Ubuntu Linux Desktop are:
  * Machine type: **linux64**
  * Directory: **$HOME/src/gamess**
  * FORTRAN compiler: **gfortran**
