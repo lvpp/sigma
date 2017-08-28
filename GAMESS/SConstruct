@@ -7,8 +7,6 @@ import shutil
 
 env = Environment()
 
-env.AppendENVPath('PATH', '/home/u/rpseng/bin')
-
 env['ENV']['USER'] = os.environ['USER']
 env['ENV']['HOME'] = os.environ['HOME']
 

@@ -6,8 +6,8 @@ import os
 
 # Configuration, can be changed by command line arguments like:
 # $ scons molfiles=../molbig variant=RM1
-molfiles = ARGUMENTS.get('molfiles', '../molfiles/')
-variant = ARGUMENTS.get('variant', 'RM1')
+molfiles = ARGUMENTS.get('molfiles', '.')
+variant = ARGUMENTS.get('variant', 'POA1_1.18')
 output = ARGUMENTS.get('output', '.cos')
 
 # the tmp directory for this build
@@ -50,8 +50,8 @@ env.Append(BUILDERS = {'MopacOpt' : mopacopt})
 
 
 # files
-env.VariantDir(tmpdir, molfiles)
-molfiles = Glob(tmpdir + '/*.mol')
+#env.VariantDir(tmpdir, molfiles)
+molfiles = Glob('*.mol')
 files = []
 files_p1 = []
 files_m1 = []
@@ -75,9 +75,10 @@ allmops = mops
 allmops += mops_p1
 allmops += mops_m1
 mopacBuild = env.Mopac(allmops)
-# env.Default('mopac')
+
 install = env.Install(variant, mopacBuild)
 install += env.Install(variant, molfiles)
 env.Alias('mopac', install)
-env.Default(install)
+
+env.Default(mopacBuild)
 

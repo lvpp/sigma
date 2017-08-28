@@ -4,6 +4,8 @@
 
 First of all, you need to [download](http://www.msg.ameslab.gov/gamess/download.html) **GAMESS** package.
 
+You need to create a folder called **src** in **/home**, and unzip the downloaded **GAMESS** folder in there.
+
 **Run the configuration script:**
 ```
 ./config
@@ -34,7 +36,7 @@ kernel.shmmax=560525368
 
 ## RUN GAMESS
 
-The .mol, Sconstruct and keys.gamess files must be in a same folder. In a terminal, access this folder and run this following command:
+The .mol, SConstruct and keys.gamess files must be in a same folder. In a terminal, access this folder and run this following command:
 ```
 scons
 ```
