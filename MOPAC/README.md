@@ -4,7 +4,7 @@
 
 **[Download](http://openmopac.net/downloads.html) MOPAC last version.**
 
-**Create "/opt/mopac/" and extract MOPACXXXX.exe on it**
+**Create "/opt/mopac/" and extract MOPAC2016.exe on it**
 ```
 cd /opt
 ```
@@ -12,21 +12,21 @@ cd /opt
 sudo mkdir mopac
 ```
 ```
-sudo mv MOPACXXXX.exe mopac
+sudo mv MOPAC2016.exe mopac
 ```
 **Create a link to MOPAC (and it will be possible to access MOPAC in any local)**
 ```
-sudo ln -sf /opt/mopac/MOPACXXXX.exe /usr/local/bin/mopac
+sudo ln -sf /opt/mopac/MOPAC2016.exe /usr/local/bin/mopac
 ```
 **Giving some permissions**
 ```
 cd mopac
 ```
 ```
-sudo chmod o+rwx MOPACXXXX.exe
+sudo chmod o+rwx MOPAC2016.exe
 ```
 ```
-sudo chmod u+rwx MOPACXXXX.exe
+sudo chmod u+rwx MOPAC2016.exe
 ```
 **Create a symbolic link with this command:**
 ```
