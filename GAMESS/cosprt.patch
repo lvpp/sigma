@@ -1,0 +1,47 @@
+0a1
+> C 20 Oct 2010 - RPS - added apparent surface charges print out
+27a29,39
+> C RPS adding the apparent surface charges print
+>       PARAMETER (MXATM=2000, MAXDEN=25*MXATM,MXABC=6000)
+>       PARAMETER (TOANGS=0.52917724924D+00, TOANGS2=TOANGS*TOANGS)
+>       COMMON /COSVCE/ QSCNET(MXABC),CORZAN(3,MXABC),
+>      *                QDEN(MAXDEN),QSCNET_SAVE(MXABC),IATSP(MXABC+1)
+> C
+>       COMMON /COSVCI/ COSURF(3,MXABC*2),CORZANO(3,MXABC),
+>      *                CSPOT(MXABC),DIRSM(3,NPPA),DIRSMH(3,NPPA/3),
+>      *                DIRVEC(3,NPPA),FL(MXABC),PHIC(MXABC),
+>      *                QSCNETO(MXABC),QSCNETC(MXABC),SRAD(MXATM)
+> C RPS
+97c109
+<      &cossar
+---
+>      &cossar*TOANGS*TOANGS
+99c111,121
+<      &cosvol
+---
+>      &cosvol*TOANGS*TOANGS*TOANGS
+> C
+> C RPS - This is the original printing command in the 2007 version:
+> C         DO 889 I=1,NPS
+> C            AREA=AREA+AR(I)
+> C            WRITE(IW,'(2I4,6F10.5)') I,IATSP(I),CORZAN(1,I),CORZAN(2,I),
+> C     *                      CORZAN(3,I),COSZAN(I),AR(I),COSZAN(I)/AR(I)
+> C
+> C       COSZAN was the surface charge, now it is called QSCNET
+> C       AR was the segment area, now it is callled FL
+> C
+101a124,133
+>       WRITE(IW,*)'NPS= ',nps
+>       WRITE(IW,'(a, $)')'NR.  ATOM  (X, Y, Z)(a.u.)                 '
+>       WRITE(IW,*)'CHARGE(e)  AREA(A**2) SIGMA(e/A**2)'
+>          DO 889 I=1,NPS
+>             WRITE(IW,'(2I4,6F11.6)') I,IATSP(I),CORZAN(1,I),
+>      *      CORZAN(2,I),CORZAN(3,I),QSCNET(I),
+>      *      FL(I),QSCNET(I)/FL(I)
+>  889     CONTINUE
+> C RPS
+>       WRITE(IW,*)'====================================================='
+104c136
+<       END
+---
+>       END 

@@ -32,6 +32,16 @@ cd $HOME/src/gamess/ddi
 ./compddi
 cp ddikick.x ../
 ```
+**Fix the cosmo print routine:**
+
+Download the [cosprt.src.patch](https://github.com/lvpp/sigma/blob/master/GAMESS/cosprt.src.patch) and apply the patch:
+
+```
+cp cosprt.src.patch $HOME/src/gamess/source/
+cd $HOME/src/gamess/source/
+mv cosprt.src cosprt.src.original
+patch cosprt.src.original -i cosprt.patch -o cosprt.src
+```
 
 **Go back to the top folder and compile all modules:**
 ```
