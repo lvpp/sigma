@@ -37,7 +37,7 @@ cp ddikick.x ../
 Download the [cosprt.patch](https://github.com/lvpp/sigma/blob/master/GAMESS/cosprt.patch) and apply the patch:
 
 ```
-cp cosprt.src.patch $HOME/src/gamess/source/
+cp cosprt.patch $HOME/src/gamess/source/
 cd $HOME/src/gamess/source/
 mv cosprt.src cosprt.src.original
 patch cosprt.src.original -i cosprt.patch -o cosprt.src
