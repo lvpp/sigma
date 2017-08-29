@@ -34,7 +34,7 @@ cp ddikick.x ../
 ```
 **Fix the cosmo print routine:**
 
-Download the [cosprt.src.patch](https://github.com/lvpp/sigma/blob/master/GAMESS/cosprt.src.patch) and apply the patch:
+Download the [cosprt.patch](https://github.com/lvpp/sigma/blob/master/GAMESS/cosprt.patch) and apply the patch:
 
 ```
 cp cosprt.src.patch $HOME/src/gamess/source/
