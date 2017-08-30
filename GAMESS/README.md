@@ -11,7 +11,7 @@ that folder. Make sure the final directory is called **/home/lvpp/gamess**, wher
 
 **Install the required packages**
 ```
-sudo apt-get install scons openbabel csh gfortran
+sudo apt-get install scons openbabel csh gfortran wget patch
 ```
 
 **Using a terminal, enter the GAMESS package folder and run the configuration script:**
@@ -32,13 +32,12 @@ cd $HOME/src/gamess/ddi
 ./compddi
 cp ddikick.x ../
 ```
-**Fix the cosmo print routine:**
 
-Download the [cosprt.patch](https://github.com/lvpp/sigma/blob/master/GAMESS/cosprt.patch) and apply the patch:
+**Patch the COSPRT routine:**
 
 ```
-cp cosprt.patch $HOME/src/gamess/source/
 cd $HOME/src/gamess/source/
+wget https://raw.githubusercontent.com/lvpp/sigma/master/GAMESS/cosprt.patch
 mv cosprt.src cosprt.src.original
 patch cosprt.src.original -i cosprt.patch -o cosprt.src
 ```
