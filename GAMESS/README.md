@@ -7,7 +7,7 @@ Currently we have instructions for Ubuntu Linux machines only and GAMESS Apr2020
 First of all, you need to [download](http://www.msg.ameslab.gov/gamess/download.html) the **GAMESS** package.
 
 You need to create a folder called **src** within your **home folder**. Unzip the downloaded **GAMESS** package inside
-that folder. Make sure the final directory is called **/home/lvpp/gamess**, where **lvpp** should be your own username.
+that folder. Make sure the final directory is called **/home/lvpp/src/gamess**, where **lvpp** should be your own username.
 
 **Install the required packages**
 ```
