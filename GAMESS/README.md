@@ -2,7 +2,7 @@
 
 ## INSTALATION GUIDE
 
-Currently we have instructions for Ubuntu Linux machines only.
+Currently we have instructions for Ubuntu Linux machines only and GAMESS Apr202017R1.
 
 First of all, you need to [download](http://www.msg.ameslab.gov/gamess/download.html) the **GAMESS** package.
 
@@ -42,13 +42,28 @@ mv cosprt.src cosprt.src.original
 patch cosprt.src.original -i cosprt.patch -o cosprt.src
 ```
 
+**Fix the paths in RUNGMS, edit the file $HOME/src/gamess/rungms and make sure it reads:**
+
+```
+set TARGET=sockets
+set SCR=$HOME/src/gamess/scr
+set USERSCR=$HOME/src/gamess/scr
+set GMSPATH=$HOME/src/gamess
+```
+
+**Create the working folder SCR:**
+```
+cd $HOME/src/gamess
+mkdir scr
+```
+
 **Go back to the top folder and compile all modules:**
 ```
 cd $HOME/src/gamess
 ./compall
 ```
 
-**Finally link the modules:**
+**Finally, link the modules:**
 ```
 ./lked
 ```

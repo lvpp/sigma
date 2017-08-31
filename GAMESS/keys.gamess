@@ -1,5 +1,5 @@
 ! SELECT RESTRICTED HARTREE-FOCK AS DEFAULT 
-$contrl scftyp=rhf $end
+ $contrl scftyp=rhf $end
 
 ! THEORY: HF OR DFT
  $contrl mplevl=0 $end
@@ -9,6 +9,7 @@ $contrl scftyp=rhf $end
 
 ! BASIS SETS
 ! KTZVP
+ $contrl ISPHER=1 $END
  $BASIS GBASIS=KTZVP $END
 
 ! One of the following
