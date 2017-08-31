@@ -21,10 +21,13 @@ cd $HOME/src/gamess
 ```
 This script will ask you several questions, typical answers for a Ubuntu Linux Desktop are:
  * Machine type: **linux64**
- * Directory: **$HOME/src/gamess**
+ * Directories: **$HOME/src/gamess**
+ * Version: **0.0**
  * FORTRAN compiler: **gfortran**
+ * GFORTRAN version: **4.8**, apparently even for more recent versions you need to put 4.8
  * Standard math library: **none**, or another optimized library if you know what you're doing
  * Comunication library: **sockets**, as we will not rely on parallel computing 
+ * LIBCCHEM: **no** 
 
 **Enter the ddi folder, compile ddi, and copy to ../:**
 ```
