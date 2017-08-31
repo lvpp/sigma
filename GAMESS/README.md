@@ -73,6 +73,10 @@ cd $HOME/src/gamess
 
 **Increase the shared memory maximum, add the following lines to the end of your /etc/sysctl.conf**
 ```
+sudo gedit /etc/sysctl.conf
+```
+Add the following lines after the last line and save the file
+```
 # gamess shmem
 kernel.shmmax=560525368
 ```
