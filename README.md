@@ -8,8 +8,9 @@ Currently, in this repository we only provide the COSMO apparent surface charges
 You will still need other code to actually compute activity coefficients or other properties with models like COSMO-RS or COSMO-SAC.
 
 ## Citing
-We kindly ask you to cite this work as "An open and extensible sigma-profile database for COSMO-based models",
-F. Ferrarini, G. B. Flores, A. R. Muniz, and R. de P. Soares (2017), *still under review*.
+We kindly ask you to cite this work as:
+ * "An open and extensible sigma-profile database for COSMO-based models", F. Ferrarini, G. B. Flores, A. R. Muniz, and R. de P. Soares (2017), *still under review*.
+ * "[Assessing the reliability of predictive activity coefficient models for molecules consisting of several functional groups](http://dx.doi.org/10.1590/S0104-66322013000100002)", R. P. Gerber and R. P. Soares (2013), Braz. J. Chem. Eng. Vol. 30, No. 01
 
 ## Using
 The *processed* database is made available in ZIP files, check the [releases](http://github.com/lvpp/sigma/releases).
