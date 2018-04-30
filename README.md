@@ -9,7 +9,7 @@ You will still need other code to actually compute activity coefficients or othe
 
 ## Citing
 We kindly ask you to cite this work as:
- * "An open and extensible sigma-profile database for COSMO-based models", F. Ferrarini, G. B. Flores, A. R. Muniz, and R. de P. Soares (2017), *still under review*.
+ * "[An open and extensible sigma-profile database for COSMO-based models](https://doi.org/10.1002/aic.16194)", F. Ferrarini, G. B. Flores, A. R. Muniz, and R. de P. Soares (2018), AIChE J.
  * "[Assessing the reliability of predictive activity coefficient models for molecules consisting of several functional groups](http://dx.doi.org/10.1590/S0104-66322013000100002)", R. P. Gerber and R. P. Soares (2013), Braz. J. Chem. Eng. Vol. 30, No. 01
 
 ## Using
