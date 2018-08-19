@@ -1,6 +1,8 @@
-# LVPP sigma-profile database
+# LVPP sigma-profile database + COSMO-SAC parametrizations
 
-This is the LVPP sigma-profile database for COSMO-based models. It currently contains information for more than **1700 molecules**.
+This is the LVPP sigma-profile database for COSMO-based models. It currently contains information for more than **1700 molecules** as well as [**COSMO-SAC parametrizations**](https://github.com/lvpp/sigma/tree/master/pars).
+
+For the COSMO-SAC parametrizations, check the [pars](https://github.com/lvpp/sigma/tree/master/pars) folder.
 
 Currently, in this repository we only provide the COSMO apparent surface charges computed either with
 [GAMESS](http://www.msg.ameslab.gov/gamess/) or [MOPAC](http://openmopac.net/).
