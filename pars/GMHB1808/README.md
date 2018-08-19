@@ -47,7 +47,7 @@ densities of the acceptor and donor segments.
 
 Different hydrogen bond energies cHBi were considered here:
 
-Parameter | Donor | Acceptor
+Parameter | H-Donor | H-Acceptor
 --------- | ------|--------
  cHB | water | water
  cHB2| water | is bonded to H
@@ -57,6 +57,10 @@ Parameter | Donor | Acceptor
  cHB5| not water | atom bonded to H
  cHB6| not water | not bonded to H (e.g. acetone)
  cHB8| not water | is bonded to more than 2 atoms (e.g. ether)
+ 
+## Combinatorial contribution
+For the combinatorial contribution **only the Flory-Huggins** term was considered,
+the Staverman-Guggenheim correction was ignored.
 
 ## Resulting fit
 
@@ -67,18 +71,20 @@ for 1460 IDAC experimental points.
 ![diag](https://github.com/lvpp/sigma/raw/master/pars/GMHB1808/diag.png)
 
 ## Molecule files considered in the parametrization
-1,2-DICHLOROETHANE.gout      N-BUTANOL.gout
-1-BUTENE.gout                N-BUTYRALDEHYDE.gout
-1-HEPTENE.gout               CHLOROFORM.gout            N-BUTYRONITRILE.gout
-1-HEXENE.gout                CYCLOHEXANE.gout           N-DECANE.gout
-2,2,3-TRIMETHYLBUTANE.gout   DIETHYL_ETHER.gout         N-HEPTANE.gout
-2,2,4-TRIMETHYLPENTANE.gout  DIISOPROPYL_ETHER.gout     N-HEXADECANE.gout
-2,3,4-TRIMETHYLPENTANE.gout  DIMETHYL_ETHER.gout        N-HEXANE.gout
-2,4-DIMETHYLPENTANE.gout     ETHANOL.gout               N-NONANE.gout
-2-METHYLPENTANE.gout         ETHYL_ACETATE.gout         N-OCTANE.gout
-ACETONE.gout                 ISOBUTYRALDEHYDE.gout      N-PENTANE.gout
-METHYL_ACETATE.gout        TETRAHYDROFURAN.gout
-ANILINE.gout                 METHYLCYCLOHEXANE.gout     TOLUENE.gout
-BENZENE.gout                 METHYL_ETHYL_KETONE.gout   TRIETHYLAMINE.gout
-CARBON_TETRACHLORIDE.gout    METHYL_N-BUTYL_ETHER.gout  WATER.got
+
+| | | |
+|-|-|-|
+1,2-DICHLOROETHANE.gout  |    N-BUTANOL.gout |  WATER.gout|
+1-BUTENE.gout             |   N-BUTYRALDEHYDE.gout | CARBON_TETRACHLORIDE.gout  
+1-HEPTENE.gout             |  CHLOROFORM.gout         |   N-BUTYRONITRILE.gout
+1-HEXENE.gout               | CYCLOHEXANE.gout        |   N-DECANE.gout
+2,2,3-TRIMETHYLBUTANE.gout  | DIETHYL_ETHER.gout      |   N-HEPTANE.gout
+2,2,4-TRIMETHYLPENTANE.gout | DIISOPROPYL_ETHER.gout  |   N-HEXADECANE.gout
+2,3,4-TRIMETHYLPENTANE.gout | DIMETHYL_ETHER.gout     |   N-HEXANE.gout
+2,4-DIMETHYLPENTANE.gout    | ETHANOL.gout            |   N-NONANE.gout
+2-METHYLPENTANE.gout        | ETHYL_ACETATE.gout      |   N-OCTANE.gout
+ACETONE.gout                | ISOBUTYRALDEHYDE.gout   |   N-PENTANE.gout
+METHYL_ACETATE.gout        |TETRAHYDROFURAN.gout  |  METHYL_N-BUTYL_ETHER.gout
+ANILINE.gout               |  METHYLCYCLOHEXANE.gout   |  TOLUENE.gout
+BENZENE.gout               |  METHYL_ETHYL_KETONE.gout  | TRIETHYLAMINE.gout
 
