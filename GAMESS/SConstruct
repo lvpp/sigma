@@ -45,7 +45,7 @@ babelgam_m1 = Builder(action = 'babel -i mol $SOURCE -o gamin -xf ' + keys_m1 + 
 def gamess_targets(target, source, env):
            target.append('$HOME/src/gamess/$TARGET.dat')
            return target, source
-gamess = Builder(action = os.environ['HOME'] + '/src/gamess/rungms $SOURCE > $TARGET', suffix = '.gout',
+gamess = Builder(action = os.environ['HOME'] + '/src/gamess/rungms $SOURCE > $TARGET', suffix = '.gamout',
 	single_source=True) # , emitter = gamess_targets)
 env.Append(BUILDERS = {'BabelGam' : babelgam})
 env.Append(BUILDERS = {'BabelGam_m1' : babelgam_m1})
@@ -55,8 +55,9 @@ env.Append(BUILDERS = {'Gamess' : gamess})
 # If in dist mode, copy all mol files to this folder and build all
 dist = ARGUMENTS.get('dist', 0)
 if dist == 'true':
-	#molsrc = Glob('../mol/tmp/*.mol')
-	molsrc = Glob('../mol/std/*.mol')
+	molsrc = []
+	#molsrc+= Glob('../mol/tmp/*.mol')
+	molsrc+= Glob('../mol/std/*.mol')
 	molsrc+= Glob('../mol/big/*.mol')
 	molsrc+= Glob('../mol/ions/*.mol')
 	env.Execute(Install('.', molsrc))
