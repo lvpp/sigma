@@ -42,7 +42,8 @@ public class FileShorterGAMESS {
 		File source = new File(this.sourceFolder);
 		if (source.exists())
 			for (String file : source.list())
-				shorter(file);
+				if(file.endsWith(".gout"))
+					shorter(file);
 
 		if (destiny.list().length == 0)
 			destiny.list();
@@ -193,9 +194,9 @@ public class FileShorterGAMESS {
 	public static void main(String[] args) {
 
 		// TODO review folders...
-		String sourcePath = "testTransfer/gout";
-		String destinyPath = "testTransfer/goutShort";
-		String errorPath = "testTransfer/gout3";
+		String sourcePath = "/home/dudapelisser/Desktop/MoleculasPequenas";
+		String destinyPath = "/home/dudapelisser/Desktop/goutShortfinal";
+		String errorPath = "/home/dudapelisser/Desktop/gouterrofinal";
 		new FileShorterGAMESS(sourcePath, destinyPath, errorPath);
 
 	}
