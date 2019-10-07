@@ -1,0 +1,13 @@
+#Guo, W.; Hou, Y.; Ren, S.; Tian, S.; Wu, W.
+#Formation of Deep Eutectic Solvents by Phenols and Choline Chloride and Their #Physical Properties
+#J. Chem. Eng. Data, 2013, 58(4), 866-872
+
+[CHOLINE][CL] 2,3-XYLENOL
+T K	X
+290.8	2.50E-01
+316.3	2.00E-01
+323.6	3.32E-01
+325.0	1.67E-01
+330.5	4.00E-01
+339.8	1.00E-01
+348.2	0.00E+00
