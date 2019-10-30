@@ -45,7 +45,7 @@ babelgam_m1 = Builder(action = 'babel -i mol $SOURCE -o gamin -xf ' + keys_m1 + 
 def gamess_targets(target, source, env):
            target.append('$HOME/src/gamess/$TARGET.dat')
            return target, source
-gamess = Builder(action = os.environ['HOME'] + '/src/gamess/rungms $SOURCE > $TARGET', suffix = '.gamout',
+gamess = Builder(action = os.environ['HOME'] + '/src/gamess/rungms $SOURCE > $TARGET', suffix = '.gout',
 	single_source=True) # , emitter = gamess_targets)
 env.Append(BUILDERS = {'BabelGam' : babelgam})
 env.Append(BUILDERS = {'BabelGam_m1' : babelgam_m1})
