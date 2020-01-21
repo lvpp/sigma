@@ -1,6 +1,5 @@
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3613786.svg)](https://doi.org/10.5281/zenodo.3613786)
-
 # LVPP sigma-profile database + COSMO-SAC parametrizations
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3613786.svg)](https://doi.org/10.5281/zenodo.3613786)
 
 This is the LVPP sigma-profile database for COSMO-based models. It currently contains information for more than **1700 molecules** as well as [**COSMO-SAC parametrizations**](https://github.com/lvpp/sigma/tree/master/pars).
 
