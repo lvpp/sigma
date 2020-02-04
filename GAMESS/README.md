@@ -11,7 +11,7 @@ that folder. Make sure the final directory is called **/home/lvpp/src/gamess**, 
 
 **Install the required packages**
 ```
-sudo apt-get install scons openbabel csh gfortran wget patch
+sudo apt-get install scons openbabel csh gfortran wget patch python-psutil
 ```
 
 **Using a terminal, enter the GAMESS package folder and run the configuration script:**
