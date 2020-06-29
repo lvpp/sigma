@@ -84,7 +84,9 @@ else:
     def build_function(target, source, env):
 	f = open(source[0].rstr(), "r")
       	content = f.read()
+	f.close()
 	
+	f = open(target[0].rstr(), "w")
     #filter only the relevant information
     	try:    
     		gamess_version = re.search('directory...(.*?)SINCE', content, flags=re.S).group(1)
@@ -95,15 +97,15 @@ else:
 
 		final_file = gamess_version + inputs_cards + cavity + "\n       ***** " + geometry_coordinates + sigma_profile
 		#creates a new file .gout
-	        f = open(target[0].rstr(), "w")
         	f.write(final_file)
-	        f.close()
 	except AttributeError:
 		gamess_version = ''
 		inputs_cards = ''
 		cavity = ''
 		geometry_coordinates = ''
 		sigma_profile = ''
+
+	f.close()
 	    
 
     bld = Builder(action = build_function, suffix = '.gout', src_suffix = '.gamout',
