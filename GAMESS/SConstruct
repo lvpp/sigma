@@ -162,8 +162,9 @@ env.Alias('gamess', goutBuild)
 basedir = os.path.basename(os.path.abspath('.'))
 
 if dist == 'true':
+	molfiles = Glob('*.gout')
 	# Zip all .gout by default if in 'dist' mode
-	zipAction = env.Zip('../HF_TZVP.zip', goutBuild)
+	zipAction = env.Zip('../HF_TZVP.zip', molfiles)
 	env.Default(zipAction)
 else:
 	env.Default(goutBuild)
