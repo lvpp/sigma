@@ -97,8 +97,14 @@ def build_function(target, source, env):
 	    		geometry_coordinates = re.search('\s\s\s\s\s\*\*\*\*\*\s(.*?)INTERNUCLEAR', content, flags=re.S).group(1)
 	    	except AttributeError:
 	    		geometry_coordinates = ''
-	    	sigma_profile = re.search('GAMESS\/(.*?)gracefully', content, flags=re.S).group(0)
-	    	
+	    	sigma_profile = re.search('COSab(.*?)gracefully', content, flags=re.S).group(0)
+	    
+		print(len(gamess_version))	
+		print(len(inputs_cards))	
+		print(len(geometry_input))	
+		print(len(cavity))	
+		print(len(geometry_coordinates))	
+		print(len(sigma_profile))	
 	    	final_file = gamess_version + inputs_cards + geometry_input + cavity + "\n       ***** " + geometry_coordinates + sigma_profile
 	    	#creates a new file .gout
 	    	f.write(final_file)
