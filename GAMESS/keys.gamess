@@ -29,4 +29,4 @@
  $COSGMS COSRAD = 1.4 $end
 
 ! available memory
- $SYSTEM MWORDS=40 $END
+ $SYSTEM MWORDS=50 $END

@@ -1,4 +1,5 @@
 # LVPP sigma-profile database + COSMO-SAC parametrizations
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3924076.svg)](https://doi.org/10.5281/zenodo.3924076)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3613786.svg)](https://doi.org/10.5281/zenodo.3613786)
 
 This is the LVPP sigma-profile database for COSMO-based models. It currently contains information for more than **1700 molecules** as well as [**COSMO-SAC parametrizations**](https://github.com/lvpp/sigma/tree/master/pars).
@@ -12,6 +13,7 @@ You will still need other code to actually compute activity coefficients or othe
 
 ## Citing
 We kindly ask you to cite this work as:
+ * "[LVPP sigma-profile database (20.06)](https://doi.org/10.5281/zenodo.3924076)", DOI:10.5281/zenodo.3924076
  * "[LVPP sigma-profile database (18.07)](https://doi.org/10.5281/zenodo.3613786)", DOI:10.5281/zenodo.3613786
  * "[An open and extensible sigma-profile database for COSMO-based models](https://doi.org/10.1002/aic.16194)", F. Ferrarini, G. B. Flores, A. R. Muniz, and R. de P. Soares (2018), AIChE J.
  * "[Assessing the reliability of predictive activity coefficient models for molecules consisting of several functional groups](http://dx.doi.org/10.1590/S0104-66322013000100002)", R. P. Gerber and R. P. Soares (2013), Braz. J. Chem. Eng. Vol. 30, No. 01

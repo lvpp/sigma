@@ -4,6 +4,7 @@
 
 import psutil
 import time
+import sys
 import os
 import shutil
 import re
@@ -24,132 +25,153 @@ def checkIfGamessRunning(processName):
     return False;
 
 if checkIfGamessRunning('gamess.00.x'):
-    print('Gamess is running')
-else:
-    env = Environment()
+    print('GAMESS is already running on this machine, exiting...')
+    sys.exit()
 
-    env['ENV']['USER'] = os.environ['USER']
-    env['ENV']['HOME'] = os.environ['HOME']
+env = Environment()
 
-    # GAMESS keys file stuff
-    keys = 'keys.gamess'
-    keys_0 = 'keys_0.gamess'
-    keys_p1 = 'keys_p1.gamess'
-    keys_m1 = 'keys_m1.gamess'
-    # creating the charge files
-    file = open(keys,'r')
-    fileContents = file.read()
-    file.close()
+env['ENV']['USER'] = os.environ['USER']
+env['ENV']['HOME'] = os.environ['HOME']
 
-    file = open(keys_0,'w')
-    file.write(fileContents)
-    file.write('\n! Internal Coordinates\n $CONTRL nzvar=1 $END\n $zmat dlc=.t. auto=.t. $END')
-    file.close()
+# GAMESS keys file stuff
+keys = 'keys.gamess'
+keys_0 = 'keys_0.gamess'
+keys_p1 = 'keys_p1.gamess'
+keys_m1 = 'keys_m1.gamess'
+# creating the charge files
+file = open(keys,'r')
+fileContents = file.read()
+file.close()
 
-    file = open(keys_p1,'w')
-    file.write(fileContents + '\n $CONTRL ICHARG=+1 $END')
-    file.close()
+file = open(keys_0,'w')
+file.write(fileContents)
+# Comment out this line for linear molecules, build them manually and then revert it
+file.write('\n! Internal Coordinates\n $CONTRL nzvar=1 $END\n $zmat dlc=.t. auto=.t. $END')
+    
+# Modify key options here so there is no rebuild for already computed molecules
+file.write('\n $SYSTEM MWORDS=500 $END')
 
-    file = open(keys_m1,'w')
-    file.write(fileContents + '\n $CONTRL ICHARG=-1 $END')
-    file.close()
+file.close()
 
-    # Gamess stuff
-    babelgam = Builder(action = 'babel -i mol $SOURCE -o gamin -xf ' + keys_0 + ' $TARGET',
+file = open(keys_p1,'w')
+file.write(fileContents + '\n $CONTRL ICHARG=+1 $END')
+file.close()
+
+file = open(keys_m1,'w')
+file.write(fileContents + '\n $CONTRL ICHARG=-1 $END')
+file.close()
+
+# Gamess stuff
+babelgam = Builder(action = 'obabel -i mol $SOURCE -o gamin -xf ' + keys_0 + ' -O $TARGET',
     	             suffix = '.inp', single_source=True)
-    babelgam_p1 = Builder(action = 'babel -i mol $SOURCE -o gamin -xf ' + keys_p1 + ' $TARGET',
+babelgam_p1 = Builder(action = 'obabel -i mol $SOURCE -o gamin -xf ' + keys_p1 + ' -O $TARGET',
 	             suffix = '.inp', single_source=True)
-    babelgam_m1 = Builder(action = 'babel -i mol $SOURCE -o gamin -xf ' + keys_m1 + ' $TARGET',
+babelgam_m1 = Builder(action = 'obabel -i mol $SOURCE -o gamin -xf ' + keys_m1 + ' -O $TARGET',
 	             suffix = '.inp', single_source=True)
 
-    # Gamess also produces a .dat file
-    def gamess_targets(target, source, env):
+# Gamess also produces a .dat file
+def gamess_targets(target, source, env):
     	   target.append('$HOME/src/gamess/$TARGET.dat')
     	   return target, source
-    gamess = Builder(action = os.environ['HOME'] + '/src/gamess/rungms $SOURCE > $TARGET', suffix = '.gamout',
+gamess = Builder(action = os.environ['HOME'] + '/src/gamess/rungms $SOURCE > $TARGET', suffix = '.gamout',
     	single_source=True) # , emitter = gamess_targets)
 
-    env.Append(BUILDERS = {'BabelGam' : babelgam})
-    env.Append(BUILDERS = {'BabelGam_m1' : babelgam_m1})
-    env.Append(BUILDERS = {'BabelGam_p1' : babelgam_p1})
-    env.Append(BUILDERS = {'Gamess' : gamess})
+env.Append(BUILDERS = {'BabelGam' : babelgam})
+env.Append(BUILDERS = {'BabelGam_m1' : babelgam_m1})
+env.Append(BUILDERS = {'BabelGam_p1' : babelgam_p1})
+env.Append(BUILDERS = {'Gamess' : gamess})
 
-    def build_function(target, source, env):
-	f = open(source[0].rstr(), "r")
-      	content = f.read()
-	
+def build_function(target, source, env):
+    f = open(source[0].rstr(), "r")
+    content = f.read()
+    f.close()
+    	
+    f = open(target[0].rstr(), "w")
     #filter only the relevant information
-    	try:    
+    try:    
     		gamess_version = re.search('directory...(.*?)SINCE', content, flags=re.S).group(1)
     		inputs_cards = re.search('EXECUTION\ OF\ GAMESS(.*?)MEMORY\ AVAILABLE\s', content, flags=re.S).group(0)
+    		geometry_input = re.search('RUN\ TITLE(.*?)ATOMIC\ BASIS\ SET', content, flags=re.S).group(1)
     		cavity = re.search('DEFINITION\ OF\ CAVITY(.*?)PROPERTIES', content, flags=re.S).group(1)
-    		geometry_coordinates = re.search('\s\s\s\s\s\*\*\*\*\*\s(.*?)INTERNUCLEAR', content, flags=re.S).group(1)
-		sigma_profile = re.search('GAMESS\/(.*?)gracefully', content, flags=re.S).group(0)
-	except AttributeError:
-		gamess_version = ''
-		inputs_cards = ''
-		cavity = ''
-		geometry_coordinates = ''
-		sigma_profile = ''
+    		try:
+	    		geometry_coordinates = re.search('\s\s\s\s\s\*\*\*\*\*\s(.*?)INTERNUCLEAR', content, flags=re.S).group(1)
+	    	except AttributeError:
+	    		geometry_coordinates = ''
+	    	sigma_profile = re.search('COSab(.*?)gracefully', content, flags=re.S).group(0)
 	    
-	final_file = gamess_version + inputs_cards + cavity + "\n	***** " + geometry_coordinates + sigma_profile
-		    
-	#creates a new file .gout
-	f = open(target[0].rstr(), "w")
-	f.write(final_file)
-	f.close()
+		print(len(gamess_version))	
+		print(len(inputs_cards))	
+		print(len(geometry_input))	
+		print(len(cavity))	
+		print(len(geometry_coordinates))	
+		print(len(sigma_profile))	
+	    	final_file = gamess_version + inputs_cards + geometry_input + cavity + "\n       ***** " + geometry_coordinates + sigma_profile
+	    	#creates a new file .gout
+	    	f.write(final_file)
 
-    bld = Builder(action = build_function, suffix = '.gout', src_suffix = '.gamout',
-	single_source=True)
-    env.Append(BUILDERS = {'Gout' : bld})
+    except AttributeError:
+        gamess_version = ''
+        inputs_cards = ''
+        cavity = ''
+        sigma_profile = ''
 
-    # If in dist mode, copy all mol files to this folder and build all
-    dist = ARGUMENTS.get('dist', 0)
-    if dist == 'true':
+    f.close()    
+
+bld = Builder(action = build_function, suffix = '.gout', src_suffix = '.gamout',
+single_source=True)
+env.Append(BUILDERS = {'Gout' : bld})
+
+# If in dist mode, copy all mol files to this folder and build all
+dist = ARGUMENTS.get('dist', 0)
+if dist == 'true':
 	#molsrc = Glob('../mol/tmp/*.mol')
 	molsrc = Glob('../mol/std/*.mol')
 	molsrc+= Glob('../mol/big/*.mol')
 	molsrc+= Glob('../mol/ions/*.mol')
 	env.Execute(Install('.', molsrc))
 
-    molfiles = Glob('*.mol')
-    files = []
-    files_p1 = []
-    files_m1 = []
-    for fi in molfiles :
-    	if str(fi).endswith("+1.mol") :
-		files_p1.append(fi)
-	elif str(fi).endswith("-1.mol") :
-		files_m1.append(fi)
-	else :
-		files.append(fi)
+molfiles = Glob('*.mol')
+files = []
+files_p1 = []
+files_m1 = []
+for fi in molfiles :
+    goutfile = os.path.splitext(fi.rstr())[0] + '.gout'
+    print(goutfile)
+    if os.path.exists(goutfile) :
+        print('skipping ' + goutfile)
+        continue
+    if str(fi).endswith("+1.mol") :
+        files_p1.append(fi)
+    elif str(fi).endswith("-1.mol") :
+        files_m1.append(fi)
+    else :
+        files.append(fi)
 
-    # Build all files for Gamess
-    # Delete all DAT files, otherwise gamess will stop
-    # delAction = Delete(Glob(os.environ['HOME'] + '/src/gamess/tmp/*.dat'))
-    delAction = Delete(Glob(os.environ['HOME'] + '/src/gamess/scr/*.dat'))
-    Execute(delAction)
+# Build all files for Gamess
+# Delete all DAT files, otherwise gamess will stop
+# delAction = Delete(Glob(os.environ['HOME'] + '/src/gamess/tmp/*.dat'))
+delAction = Delete(Glob(os.environ['HOME'] + '/src/gamess/scr/*.dat'))
+Execute(delAction)
 
-    # Convert mol files to gamess input
-    inps = env.BabelGam(files)
-    inps += env.BabelGam_p1(files_p1)
-    inps += env.BabelGam_m1(files_m1)
-    env.Depends(inps, ['keys.gamess'])
-    # env.Depends(inps, delAction)
-    # process files with gamess
-    gamessBuild = env.Gamess(inps)
-    goutBuild = env.Gout(gamessBuild)
-    env.Alias('gamess', goutBuild)
+# Convert mol files to gamess input
+inps = env.BabelGam(files)
+inps += env.BabelGam_p1(files_p1)
+inps += env.BabelGam_m1(files_m1)
+    
+env.Depends(inps, ['keys.gamess'])
+# env.Depends(inps, delAction)
+# process files with gamess
+gamessBuild = env.Gamess(inps)
+goutBuild = env.Gout(gamessBuild)
+env.Alias('gamess', goutBuild)
 
-    basedir = os.path.basename(os.path.abspath('.'))
+basedir = os.path.basename(os.path.abspath('.'))
 
-    if dist == 'true':
+if dist == 'true':
+	molfiles = Glob('*.gout')
 	# Zip all .gout by default if in 'dist' mode
-	zipAction = env.Zip('../HF_TZVP.zip', goutBuild)
+	zipAction = env.Zip('../HF_TZVP.zip', molfiles)
 	env.Default(zipAction)
-    else:
+else:
 	env.Default(goutBuild)
-
-
-
 
