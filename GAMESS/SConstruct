@@ -35,7 +35,8 @@ env['ENV']['HOME'] = os.environ['HOME']
 
 # GAMESS keys file stuff
 keys = 'keys.gamess'
-keys_linear = 'keys_linear.gamess'
+keys_linear = 'keys-linear.gamess'
+keys_big = 'keys-big.gamess'
 keys_0 = 'keys_0.gamess'
 keys_p1 = 'keys_p1.gamess'
 keys_m1 = 'keys_m1.gamess'
@@ -65,6 +66,8 @@ babelgam = Builder(action = 'obabel -i mol $SOURCE -o gamin -xf ' + keys_0 + ' -
 					 suffix = '.inp', single_source=True)
 babelgam_linear = Builder(action = 'obabel -i mol $SOURCE -o gamin -xf ' + keys_linear + ' -O $TARGET',
 					suffix = '.inp', single_source=True)
+babelgam_big = Builder(action = 'obabel -i mol $SOURCE -o gamin -xf ' + keys_big + ' -O $TARGET',
+					suffix = '.inp', single_source=True)
 babelgam_p1 = Builder(action = 'obabel -i mol $SOURCE -o gamin -xf ' + keys_p1 + ' -O $TARGET',
 				suffix = '.inp', single_source=True)
 babelgam_m1 = Builder(action = 'obabel -i mol $SOURCE -o gamin -xf ' + keys_m1 + ' -O $TARGET',
@@ -79,6 +82,7 @@ gamess = Builder(action = os.environ['HOME'] + '/src/gamess/rungms $SOURCE > $TA
 
 env.Append(BUILDERS = {'BabelGam' : babelgam})
 env.Append(BUILDERS = {'BabelGamLinear' : babelgam_linear})
+env.Append(BUILDERS = {'BabelGamBig' : babelgam_big})
 env.Append(BUILDERS = {'BabelGam_m1' : babelgam_m1})
 env.Append(BUILDERS = {'BabelGam_p1' : babelgam_p1})
 env.Append(BUILDERS = {'Gamess' : gamess})
@@ -129,7 +133,6 @@ dist = ARGUMENTS.get('dist', 0)
 if dist == 'true':
 	#molsrc = Glob('../mol/tmp/*.mol')
 	molsrc = Glob('../mol/std/*.mol')
-	molsrc+= Glob('../mol/big/*.mol')
 	molsrc+= Glob('../mol/ions/*.mol')
 	env.Execute(Install('.', molsrc))
 
@@ -137,11 +140,16 @@ if dist == 'true':
 	mollinear = Glob('../mol/linear/*.mol')
 	for fi in mollinear:
 		Command(os.path.split(fi.rstr())[1] + "l", [], Copy("$TARGET", fi))
+	# Big molecules we use the molb extension, since it requires a different builder
+	molbig = Glob('../mol/big/*.mol')
+	for fi in molbig:
+		Command(os.path.split(fi.rstr())[1] + "b", [], Copy("$TARGET", fi))
 
 
 molfiles = Glob('*.mol*')
 files = []
 files_linear = []
+files_big = []
 files_p1 = []
 files_m1 = []
 for fi in molfiles :
@@ -156,6 +164,8 @@ for fi in molfiles :
 		files_m1.append(fi)
 	elif str(fi).endswith(".moll") :
 		files_linear.append(fi)
+	elif str(fi).endswith(".molb") :
+		files_big.append(fi)
 	else :
 		files.append(fi)
 
@@ -167,6 +177,7 @@ Execute(delAction)
 # Convert mol files to gamess input
 inps = env.BabelGam(files)
 inps += env.BabelGamLinear(files_linear)
+inps += env.BabelGamBig(files_big)
 inps += env.BabelGam_p1(files_p1)
 inps += env.BabelGam_m1(files_m1)
 	
