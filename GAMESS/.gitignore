@@ -2,5 +2,5 @@
 /*.gout
 /*.mol
 /*.inp
-/keys_*
+/keys*
 /.scons*
