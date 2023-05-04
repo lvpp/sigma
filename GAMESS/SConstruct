@@ -33,36 +33,49 @@ env = Environment()
 env['ENV']['USER'] = os.environ['USER']
 env['ENV']['HOME'] = os.environ['HOME']
 
-# GAMESS keys file stuff
+# GAMESS keys file stuff, keys files generated from the base-keys.gamess file
+keys_base = 'base-keys.gamess'
 keys = 'keys.gamess'
 keys_linear = 'keys-linear.gamess'
 keys_big = 'keys-big.gamess'
-keys_0 = 'keys_0.gamess'
 keys_p1 = 'keys_p1.gamess'
 keys_m1 = 'keys_m1.gamess'
 # creating the charge files
-file = open(keys,'r')
-fileContents = file.read()
+file = open(keys_base,'r')
+baseContents = file.read()
 file.close()
 
-file = open(keys_0,'w')
-file.write(fileContents)
-	
-# Modify key options here so there is no rebuild for already computed molecules
-file.write('\n $SYSTEM MWORDS=500 $END')
+# Base configuration plus optimization
+optimize = '\n! Optimize the geometry\n $statpt opttol=0.0005 nstep=50 $end\n $contrl runtyp=OPTIMIZE maxit=200 $end\n'
+internalCoord = '\n! Internal Coordinates, for faster convergence\n! See http://molecularmodelingbasics.blogspot.com/2009/07/some-gamess-input-basics_24.html\n $CONTRL nzvar=1 $END\n $zmat dlc=.t. auto=.t. $END\n'
 
+# General file, optimization + internal coordinates
+file = open(keys,'w')
+file.write(baseContents + optimize + internalCoord)
 file.close()
 
+# The file for linear molecules, with optimization
+file = open(keys_linear,'w')
+file.write(baseContents + optimize)
+file.close()
+
+# File for big molecules, no optimization
+file = open(keys_big,'w')
+file.write(baseContents + internalCoord)
+file.close()
+
+# File for cations
 file = open(keys_p1,'w')
-file.write(fileContents + '\n $CONTRL ICHARG=+1 $END')
+file.write(baseContents + optimize + internalCoord + '\n $CONTRL ICHARG=+1 $END')
 file.close()
 
+# File for anions
 file = open(keys_m1,'w')
-file.write(fileContents + '\n $CONTRL ICHARG=-1 $END')
+file.write(baseContents + optimize + internalCoord + '\n $CONTRL ICHARG=-1 $END')
 file.close()
 
 # Gamess stuff
-babelgam = Builder(action = 'obabel -i mol $SOURCE -o gamin -xf ' + keys_0 + ' -O $TARGET',
+babelgam = Builder(action = 'obabel -i mol $SOURCE -o gamin -xf ' + keys + ' -O $TARGET',
 					 suffix = '.inp', single_source=True)
 babelgam_linear = Builder(action = 'obabel -i mol $SOURCE -o gamin -xf ' + keys_linear + ' -O $TARGET',
 					suffix = '.inp', single_source=True)

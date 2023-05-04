@@ -16,10 +16,7 @@
  $guess guess=HUCKEL $end
 
  $statpt projct=.FALSE. $end
-
-! Optimize the geometry with COSMO effects
- $statpt opttol=0.0005 nstep=50 $end
- $contrl runtyp=OPTIMIZE maxit=200 $end
+! $STATPT IFREEZ(1)=1,2,3 $END
 
 ! Run COSMO on perfect conductor
  $COSGMS PRFCND=.TRUE. $end
@@ -28,4 +25,4 @@
  $COSGMS COSRAD = 1.4 $end
 
 ! available memory
- $SYSTEM MWORDS=50 $END
+ $SYSTEM MWORDS=500 $END
