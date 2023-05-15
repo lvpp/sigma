@@ -6,7 +6,6 @@
 *.gout
 *.gamout
 *.mop
-*.mol
 *.moll
 *.molb
 /GAMESS-*
