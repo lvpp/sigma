@@ -100,3 +100,19 @@ scons
 
 By doing this, all the **.mol** files in the folder will be processed and the results will be in **.gout** files.
 GAMESS can take several minutes to process a molecule. The larger the molecule the longer it takes.
+
+### Special cases
+
+Linear molecules should use the **.moll** extension as opposed to **.mol**.
+This will disable some of the options that speedup the calculation for other molecues but fail if the molecule is linear.
+
+Cations and Anions also require special options. For these cases the files should end with either **+1.mol** or **-1.mol**.
+
+### Calculating all molecules
+
+In order to calculate all molecules of the database (a very slow process) the following command can be used:
+```
+scons dist=true -j 8
+```
+
+The `-j 8` argument run 8 molecules in parallel, adjust this to the number of cores available on the machine.
