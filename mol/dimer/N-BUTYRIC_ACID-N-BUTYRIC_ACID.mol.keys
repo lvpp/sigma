@@ -1,0 +1,2 @@
+! Extra keys for this dimer
+ $ZMAT NONVDW(1)=5,21, 16,11 $END

@@ -75,7 +75,7 @@ file.write(baseContents + optimize + internalCoord + '\n $CONTRL ICHARG=-1 $END'
 file.close()
 
 # Gamess stuff
-babelgam = Builder(action = 'obabel -i mol $SOURCE -o gamin -xf ' + keys + ' -O $TARGET',
+babelgam = Builder(action = 'obabel -i mol $SOURCE -o gamin -xf ' + keys + ' -O $TARGET; [ ! -f ${SOURCE}.keys ] || cat ${SOURCE}.keys >> $TARGET',
 					 suffix = '.inp', single_source=True)
 babelgam_linear = Builder(action = 'obabel -i mol $SOURCE -o gamin -xf ' + keys_linear + ' -O $TARGET',
 					suffix = '.inp', single_source=True)
