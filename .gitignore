@@ -11,6 +11,8 @@
 /GAMESS-*
 /MOPAC-*
 /GAMESS/*.mol
+/GAMESS/*.mol.keys
+/GAMESS/*.xyz
 /MOPAC/*.mol
 /test/*
 *.nwout
@@ -21,3 +23,4 @@
 /NWChem*
 /pm6*
 /svp*
+/dimer**
