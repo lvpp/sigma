@@ -1,0 +1,22 @@
+! SELECT RESTRICTED HARTREE-FOCK AS DEFAULT 
+ $contrl scftyp=rhf $end
+
+! THEORY: HF OR DFT
+! $contrl mplevl=0 $end
+ $DFT DFTTYP=BP86 $END
+
+ $system timlim=10000 mwords=20 $end
+ $SCF DIRSCF=.TRUE. $end
+
+! BASIS SET
+! https://github.com/shoubhikraj/molecular-modelling/tree/main/basis-sets
+ $contrl ISPHER=1 $END
+ $BASIS GBASIS=d2svp EXTFIL=.t. $END
+
+! One of the following
+ $guess guess=HUCKEL $end
+
+ $statpt projct=.FALSE. $end
+
+! available memory
+ $SYSTEM MWORDS=500 $END
