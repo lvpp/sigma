@@ -1,4 +1,4 @@
-# www.scons.org script files for COSMO computations using GAMESS
+# www.scons.org script files for geometry optimization using GAMESS
 #
 # Use "nohup" to run from ssh and keep running after logout
 
@@ -26,7 +26,7 @@ def checkIfGamessRunning(processName):
 
 if checkIfGamessRunning('gamess.00.x'):
 	print('GAMESS is already running on this machine, exiting...')
-	# sys.exit()
+	sys.exit()
 
 env = Environment()
 
