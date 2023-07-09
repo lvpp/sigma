@@ -9,7 +9,7 @@ For the COSMO-SAC parametrizations, check the [pars](https://github.com/lvpp/sig
 Currently, in this repository we only provide the COSMO apparent surface charges computed either with
 [GAMESS](http://www.msg.ameslab.gov/gamess/) or [MOPAC](http://openmopac.net/).
 
-You will still need other code to actually compute activity coefficients or other properties with models like COSMO-RS or COSMO-SAC.
+You will still need [JCOSMO](https://www.ufrgs.br/lvpp/download/jcosmo/) other software to actually compute activity coefficients or other properties with models like COSMO-RS or COSMO-SAC.
 
 ## Citing
 We kindly ask you to cite this work as:
@@ -21,6 +21,7 @@ We kindly ask you to cite this work as:
 ## Using
 The *processed* database is made available in ZIP files, check the [releases](http://github.com/lvpp/sigma/releases).
 Just download one of the release files, uncompress and look for the molecule you need.
+[JCOSMO](https://www.ufrgs.br/lvpp/download/jcosmo/) can be used to view the 3D apparent surface charge densities.
 
 Currently we have the following releases:
 * HF+TZVP using GAMESS
