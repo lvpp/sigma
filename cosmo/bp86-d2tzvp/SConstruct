@@ -63,7 +63,7 @@ file.write(baseContents + cosmoKeys + '\n $CONTRL ICHARG=-1 $END')
 file.close()
 
 # Gamess stuff
-babelXYZToInpCosmo = Builder(action = 'obabel -i xyz $SOURCE -o gamin -xf ' + keys_cosmo + ' -O $TARGET', suffix = '.inp', single_source=True)
+babelXYZToInpCosmo = Builder(action = 'obabel -i xyz $SOURCE -o gamin -xf ' + keys_cosmo + ' -O $TARGET; [ ! -f ${SOURCE}.keys ] || cat ${SOURCE}.keys >> $TARGET', suffix = '.inp', single_source=True)
 babelXYZToInpCosmo_p1 = Builder(action = 'obabel -i xyz $SOURCE -o gamin -xf ' + keys_cosmo_p1 + ' -O $TARGET', suffix = '.inp', single_source=True)
 babelXYZToInpCosmo_m1 = Builder(action = 'obabel -i xyz $SOURCE -o gamin -xf ' + keys_cosmo_m1 + ' -O $TARGET', suffix = '.inp', single_source=True)
 
