@@ -1,7 +1,7 @@
 /*.gamout
 /*.gout
 /*.mol
-/*.mol.keys
+/*.keys
 /*.inp
 /keys*
 /.scons*
