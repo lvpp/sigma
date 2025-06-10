@@ -26,7 +26,7 @@ cosmo
 
   charge_correction scale
 
-  parameters rt18.par
+  parameters ../rt18.par
 end
 
 task dft energy
