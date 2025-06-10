@@ -1,0 +1,33 @@
+
+basis spherical noprint 
+  *  library def2-svpd
+end
+ecp noprint
+  Pd library def2-ecp
+  I  library def2-ecp
+  Xe library def2-ecp
+end
+
+dft
+  XC b3lyp
+  direct
+  noio
+end
+
+cosmo
+  info "geometry:gas-b3lyp-d2svpd, cosmo:b3lyp-d2svpd, doi:10.5281/zenodo.3613785"
+  rsolv  1.3
+  screen ideal
+
+  do_cosmo_ks
+  cavity ses
+  do_cosmo_file
+  ndiv fine
+
+  charge_correction scale
+
+  parameters rt18.par
+end
+
+task dft energy
+
