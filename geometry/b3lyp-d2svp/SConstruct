@@ -1,4 +1,4 @@
-# www.scons.org script files for geometry optimization using GAMESS
+# www.scons.org script files for COSMO computations using NWChem
 #
 # Use "nohup" to run from ssh and keep running after logout
 
@@ -6,139 +6,179 @@ import psutil
 import time
 import sys
 import os
+import os.path
 import shutil
 import re
 
+# Set the nwchem executable and basis set folder
+nwchem = os.environ['HOME'] + '/git/nwchem/bin/LINUX64/nwchem'
+basis = os.environ['HOME'] + '/git/nwchem/src/basis/libraries'
 
-def checkIfGamessRunning(processName):
-	'''
-	Check if there is any running process that contains the given name processName.
-	'''
-	#Iterate over the all the running process
-	for proc in psutil.process_iter():
-		try:
-			# Check if process name contains the given name string.
-			if processName.lower() in proc.name().lower():
-				return True
-		except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
-			pass
-	return False;
-
-if checkIfGamessRunning('gamess.00.x'):
-	print('GAMESS is already running on this machine, exiting...')
+if not os.path.isfile(nwchem):
+	print('NWchem executable not found: ' + nwchem)
 	sys.exit()
+
+if not os.path.isdir(basis):
+	print('NWchem basis set folder not found: ' + basis)
+	sys.exit()
+
+os.environ['NWCHEM_BASIS_LIBRARY'] = basis
+
+import SCons.Errors
+
+from rdkit import Chem
+from rdkit.Chem import AllChem
 
 env = Environment()
 
 env['ENV']['USER'] = os.environ['USER']
 env['ENV']['HOME'] = os.environ['HOME']
 
-# GAMESS keys file stuff, keys files generated from the base-keys.gamess file
-keys_base = 'base-keys.gamess'
-keys_gas = 'keys_gas.gamess'
-keys_gas_linear = 'keys_gas_linear.gamess'
-keys_gas_p1 = 'keys_gas_p1.gamess'
-keys_gas_m1 = 'keys_gas_m1.gamess'
-# creating the charge files
+xyz_folder = "xyz/"
+if not os.path.isdir(xyz_folder):
+    os.mkdir(xyz_folder)
+
+# NWChem keys file stuff
+keys_base = 'base-keys.txt'
 file = open(keys_base,'r')
 baseContents = file.read()
 file.close()
 
-# Base configuration plus optimization
-optimizeKeys = '\n! Optimize the geometry\n $statpt opttol=0.0005 nstep=50 $end\n $contrl runtyp=OPTIMIZE maxit=200 $end\n'
-internalCoord = '\n! Internal Coordinates, for faster convergence\n! See http://molecularmodelingbasics.blogspot.com/2009/07/\n! some-gamess-input-basics_24.html\n $CONTRL nzvar=1 $END\n $zmat dlc=.t. auto=.t. $END\n'
+def mol_to_nw(target, source, env):
+    mol_file = source[0].rstr()
+    nwchem_file = target[0].rstr()
 
-# General file, gas phase optimization
-file = open(keys_gas,'w')
-file.write(baseContents + optimizeKeys + internalCoord)
-file.close()
+    # Load molecule from .mol file
+    mol = Chem.MolFromMolFile(mol_file, removeHs=False)
 
-# The file for linear molecules, with optimization
-file = open(keys_gas_linear,'w')
-file.write(baseContents + optimizeKeys)
-file.close()
+    if mol is None:
+        SCons.Errors.BuildError(node=target[0], errstr="Could not parse the .mol file.")
+        return
+    
+    num_atoms = mol.GetNumAtoms()
+    conf = mol.GetConformer()
 
-# File for cations
-file = open(keys_gas_p1,'w')
-file.write(baseContents + optimizeKeys + '\n $CONTRL ICHARG=+1 $END')
-file.close()
+    # Extract filename without extension for the title
+    title = os.path.splitext(os.path.basename(mol_file))[0]
 
-# File for anions
-file = open(keys_gas_m1,'w')
-file.write(baseContents + optimizeKeys + '\n $CONTRL ICHARG=-1 $END')
-file.close()
+    # Check the charge
+    charge = 0
+    if title.endswith("+1"):
+        charge = 1
+    elif title.endswith("+2"):
+        charge = 2
+    elif title.endswith("+3"):
+        charge = 3
+    elif title.endswith("-1"):
+        charge = -1
+    elif title.endswith("-2"):
+        charge = -2
+    elif title.endswith("-3"):
+        charge = -3
 
-# Gamess stuff
-babelGasMolToInp = Builder(action = 'obabel -i mol \'$SOURCE\' -o gamin -xf ' + keys_gas + ' -O \'$TARGET\'; [ ! -f \'${SOURCE.base}.keys\' ] || cat \'${SOURCE.base}.keys\' >> \'$TARGET\'', suffix = '.inp', single_source=True)
-babelGasMolToInp_linear = Builder(action = 'obabel -i mol $SOURCE -o gamin -xf ' + keys_gas_linear + ' -O $TARGET', suffix = '.inp', single_source=True)
-babelGasMolToInp_p1 = Builder(action = 'obabel -i mol $SOURCE -o gamin -xf ' + keys_gas_p1 + ' -O $TARGET', suffix = '.inp', single_source=True)
-babelGasMolToInp_m1 = Builder(action = 'obabel -i mol $SOURCE -o gamin -xf ' + keys_gas_m1 + ' -O $TARGET', suffix = '.inp', single_source=True)
-babelGamessToXYZ = Builder(action = 'obabel -i gamout $SOURCE -o xyz -O $TARGET', suffix = '.xyz', single_source=True)
+    # Generate the NWChem input file
+    with open(nwchem_file, "w") as f:
+        f.write(f"start {title}\n\n")
+        if charge != 0:
+            f.write(f"charge {charge}\n")
+        f.write("geometry units angstrom noautoz\n")
+        for atom in mol.GetAtoms():
+            pos = conf.GetAtomPosition(atom.GetIdx())
+            f.write(f"  {atom.GetSymbol()} {pos.x:.8f} {pos.y:.8f} {pos.z:.8f}\n")
+        f.write("end\n\n")
 
-# Gamess also produces a .dat file
-def gamess_targets(target, source, env):
-		   target.append('$HOME/src/gamess/$TARGET.dat')
-		   return target, source
+        f.write(baseContents)
 
-gamessGas = Builder(action = os.environ['HOME'] + '/src/gamess/rungms $SOURCE > $TARGET', suffix = '.gamout',
-		single_source=True) # , emitter = gamess_targets)
+def out_to_xyz(target, source, env):
+    out_file = source[0].rstr()
+    xyz_file = xyz_folder + target[0].rstr()
+    with open(out_file, 'r') as f:
+        lines = f.readlines()
+    
+    # Find the line with "Optimization converged"
+    opt_index = next((i for i, line in enumerate(lines) if "Optimization converged" in line), None)
+    
+    if opt_index is None:
+        SCons.Errors.BuildError(node=target[0], errstr="Optimization not found in out file.")
+        return
+    
+    # Extract energy (assuming it is a few lines below, starting with @)
+    energy = None
+    for i in range(opt_index, len(lines)):
+        if lines[i].startswith('@'):
+            elements = lines[i].split()
+            energy = elements[2]
+            break
+    
+    if energy is None:
+        SCons.Errors.BuildError(node=target[0], errstr="Converged energy not found.")
+        return
+    
+    # Extract geometry
+    atom_lines = []
+    for i in range(opt_index, len(lines)):
+        if 'No.' in lines[i]:
+            for j in range(i+2, len(lines)):
+                elements = lines[j].split()
+                if(len(elements) != 6):
+                    break
 
-env.Append(BUILDERS = {'BabelGasMolToInp' : babelGasMolToInp})
-env.Append(BUILDERS = {'BabelGasMolToInp_linear' : babelGasMolToInp_linear})
-env.Append(BUILDERS = {'BabelGasMolToInp_p1' : babelGasMolToInp_p1})
-env.Append(BUILDERS = {'BabelGasMolToInp_m1' : babelGasMolToInp_m1})
-env.Append(BUILDERS = {'BabelGamessToXYZ' : babelGamessToXYZ})
-env.Append(BUILDERS = {'GamessGas' : gamessGas})
+                atom_lines.append(elements[1] +" "+ elements[3] +" "+ elements[4] +" "+ elements[5])
+            break
+    
+    if not atom_lines:
+        SCons.Errors.BuildError(node=target[0], errstr="No converged atomic coordinates found.")
+        return
+    
+    # Write XYZ file
+    with open(xyz_file, 'w') as f:
+        f.write(f"{len(atom_lines)}\n")
+        f.write(out_file + f" Energy: {energy}\n")
+        for atom in atom_lines:
+            f.write(atom + "\n")
 
+# Our custom builders
+molToNw = Builder(action = mol_to_nw, suffix = '.nw', single_source=True)
+outToXyz = Builder(action = out_to_xyz, suffix = '.xyz', single_source=True)
+# os.environ['HOME'] + '/nwchem/bin/LINUX64/nwchem
+nwchemOut = Builder(action = 'mpirun -np 1 nwchem \"$SOURCE\" > \"${SOURCE.base}.out\"; ' +
+                      'rm -f ' +
+                      ' \"${SOURCE.base}\".gridpts.0 ' +
+                      ' \"${SOURCE.base}\".aoints.0 ' +
+                      ' \"${SOURCE.base}\".b' +
+                      ' \"${SOURCE.base}\".b^-1' +
+                      ' \"${SOURCE.base}\".c' +
+                      ' \"${SOURCE.base}\".drv.hess' +
+                      ' \"${SOURCE.base}\".db' +
+                      ' \"${SOURCE.base}\".p' +
+                      ' \"${SOURCE.base}\".zmat' +
+                      ' \"${SOURCE.base}\".movecs'
+                      ,suffix = '.out', single_source=True)
 
-# If in dist mode, copy all mol files to this folder and build all
-dist = ARGUMENTS.get('dist', 0)
-if dist == 'true':
-	#molsrc = Glob('../mol/tmp/*.mol')
-	molsrc = Glob('../../mol/std/*.mol')
-	molsrc+= Glob('../../mol/ions/*.mol')
-	env.Execute(Install('.', molsrc))
+env.Append(BUILDERS = {'MolToNw' : molToNw})
+env.Append(BUILDERS = {'NwToOut' : nwchemOut})
+env.Append(BUILDERS = {'OutToXyz' : outToXyz})
 
-	# Linear molecules we use the moll extension, since it requires a different builder
-	mollinear = Glob('../../mol/linear/*.mol')
-	for fi in mollinear:
-		Command(os.path.split(fi.rstr())[1] + "l", [], Copy("$TARGET", fi))
-
-
-# If we should run the gas optimization to build the xyz files
-molfiles = Glob('*.mol*')
+molfiles = Glob('*.mol')
 files = []
-files_linear = []
+files_big = []
 files_p1 = []
 files_m1 = []
+files_m2 = []
 for fi in molfiles :
-	outfile = os.path.splitext(fi.rstr())[0] + '.xyz'
-	if os.path.exists(outfile) :
-		print('skipping ' + outfile)
-		continue
-	if str(fi).endswith("+1.mol") :
-		files_p1.append(fi)
-	elif str(fi).endswith("-1.mol") :
-		files_m1.append(fi)
-	elif str(fi).endswith(".moll") :
-		files_linear.append(fi)
-	elif str(fi).endswith(".mol") :
-		files.append(fi)
-	
-# Convert mol files to gamess input
-inpFiles = env.BabelGasMolToInp(files)
-inpFiles += env.BabelGasMolToInp_linear(files_linear)
-inpFiles += env.BabelGasMolToInp_p1(files_p1)
-inpFiles += env.BabelGasMolToInp_m1(files_m1)
-gamoutFiles = env.GamessGas(inpFiles)
-xyzFiles = env.BabelGamessToXYZ(gamoutFiles)
-env.Depends(inpFiles, ['base-keys.gamess'])
-	
+    finame = os.path.splitext(fi.rstr())[0]
+    xyzfile = xyz_folder + finame + '.xyz'
+    if os.path.exists(xyzfile):
+        print('skipping ' + xyzfile)
+        continue
+    files.append(fi)
+
+# Convert xyz files to nwchem input
+nwFiles = env.MolToNw(files)
+outFiles = env.NwToOut(nwFiles)
+xyzFiles = env.OutToXyz(outFiles)
+
+env.Depends(nwFiles, ['base-keys.txt'])
+
 env.Default(xyzFiles)
-
-# Build all files for Gamess
-# Delete all DAT files, otherwise gamess will stop
-delAction = Delete(Glob(os.environ['HOME'] + '/src/gamess/scr/*.dat') + Glob('/tmp/*.dat'))
-Execute(delAction)
-
 
