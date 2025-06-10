@@ -1,0 +1,23 @@
+basis spherical noprint
+  *   library def2-svpd
+end
+ecp
+  I library def2-ecp
+end
+
+dft
+  XC b3lyp
+  direct
+  noio
+end
+driver
+  maxiter 100
+end
+
+task dft optimize
+
+# In case we wanto to evaluate the dipole moment
+property
+  dipole
+end
+task dft property
