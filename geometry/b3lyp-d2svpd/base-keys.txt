@@ -1,8 +1,5 @@
-
-memory total 2 gb
-
 basis spherical noprint
-  *   library def2-svp
+  *   library def2-svpd
 end
 ecp noprint
   Pd library def2-ecp
@@ -17,7 +14,6 @@ dft
   direct
   noio
 end
-
 driver
   maxiter 100
 end

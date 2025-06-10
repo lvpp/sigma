@@ -1,4 +1,4 @@
-# www.scons.org script files for COSMO computations using NWChem
+# www.scons.org script files for geometry optimization using NWChem
 #
 # Use "nohup" to run from ssh and keep running after logout
 
