@@ -6,30 +6,25 @@ import psutil
 import time
 import sys
 import os
+import os.path
 import shutil
 import re
 
+# Set the nwchem executable and basis set folder
+nwchem = os.environ['HOME'] + '/git/nwchem/bin/LINUX64/nwchem'
+basis = os.environ['HOME'] + '/git/nwchem/src/basis/libraries'
 
-def checkIfRunning(processName):
-	'''
-	Check if there is any running process that contains the given name processName.
-	'''
-	#Iterate over the all the running process
-	for proc in psutil.process_iter():
-		try:
-			# Check if process name contains the given name string.
-			if processName.lower() in proc.name().lower():
-				return True
-		except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
-			pass
-	return False;
+if not os.path.isfile(nwchem):
+	print('NWchem executable not found: ' + nwchem)
+	sys.exit()
 
-if checkIfRunning('nwchem'):
-	print('NWchem is already running on this machine, exiting...')
-#	sys.exit()
+if not os.path.isdir(basis):
+	print('NWchem basis set folder not found: ' + basis)
+	sys.exit()
+
+os.environ['NWCHEM_BASIS_LIBRARY'] = basis
 
 env = Environment()
-
 env['ENV']['USER'] = os.environ['USER']
 env['ENV']['HOME'] = os.environ['HOME']
 
@@ -80,7 +75,7 @@ def xyz_to_nw(target, source, env):
 
 # Our custom builders
 xyzToNw = Builder(action = xyz_to_nw, suffix = '.nw', single_source=True)
-nwchemCosmo = Builder(action = os.environ['HOME'] + '/nwchem/bin/LINUX64/nwchem \"$SOURCE\" > \"${SOURCE.base}.out\"; ' +
+nwchemCosmo = Builder(action = nwchem + ' \"$SOURCE\" > \"${SOURCE.base}.out\"; ' +
                       'grep -q "failed" \"${SOURCE.base}.out\" && rm \"${SOURCE.base}.cosmo\"; ' + # delete the result if failed
 					  'rm -f ' +
                       ' \"${SOURCE.base}\".gridpts.0 ' +
@@ -98,7 +93,7 @@ nwchemCosmo = Builder(action = os.environ['HOME'] + '/nwchem/bin/LINUX64/nwchem 
 env.Append(BUILDERS = {'XYZToNw' : xyzToNw})
 env.Append(BUILDERS = {'NwToCosmo' : nwchemCosmo})
 
-xyzfiles = Glob('*.xyz*')
+xyzfiles = Glob('*.xyz')
 files = []
 files_big = []
 files_p1 = []
