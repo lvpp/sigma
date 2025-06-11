@@ -40,7 +40,7 @@ If you can't wait for us to process your molecules (or if you don't want to)
 you can can **process** your own molecules.
 
 Just **clone** or [download](https://github.com/lvpp/sigma/archive/master.zip) this repository and then
-please check either the [cosmo folder](https://github.com/lvpp/sigma/tree/master/cosmo) for instructions
+please check the [cosmo folder](cosmo) for instructions
 on how to process your own molecules.
 
 Our instructions are for Ubuntu Linux 24.04 or superior. They should also work on other similar systems.
