@@ -1,18 +1,32 @@
-# www.scons.org script files for COSMO computations using NWChem
+# SCons Script for NWChem COSMO Calculations
 #
-# Use "nohup" to run from ssh and keep running after logout
+# This script automates COSMO computations using NWChem.
+#
+# To use:
+# 1. Place your .xyz input files in this directory.
+# 2. Run from your terminal: $ scons -j 6
+#    (This executes up to 6 parallel jobs. Each .xyz file generates one COSMO output.)
+#
+# NWChem directives can be customized in 'base-keys.txt'.
+#
+# For remote execution (e.g., via SSH), use 'nohup' to keep processes running after logout.
 
-import psutil
-import time
 import sys
 import os
-import os.path
-import shutil
-import re
 
-# Set the nwchem executable and basis set folder
-nwchem = os.environ['HOME'] + '/git/nwchem/bin/LINUX64/nwchem'
-basis = os.environ['HOME'] + '/git/nwchem/src/basis/libraries'
+if sys.platform.startswith('linux'):
+    # Linux paths
+    nwchem = f"{os.environ['HOME']}/git/nwchem/bin/LINUX64/nwchem"
+    basis = f"{os.environ['HOME']}/git/nwchem/src/basis/libraries"
+elif sys.platform.startswith('win'):
+    # Windows paths
+    nwchem = 'C:/Users/rafae/nwchem/nwchem.exe'
+    basis = 'C:/Users/rafae/nwchem/basis/'
+else:
+    raise OSError("Unsupported operating system")
+
+print(f"NWChem executable: {nwchem}")
+print(f"Basis set folder: {basis}")
 
 if not os.path.isfile(nwchem):
 	print('NWchem executable not found: ' + nwchem)
@@ -22,11 +36,8 @@ if not os.path.isdir(basis):
 	print('NWchem basis set folder not found: ' + basis)
 	sys.exit()
 
-os.environ['NWCHEM_BASIS_LIBRARY'] = basis
-
 env = Environment()
-env['ENV']['USER'] = os.environ['USER']
-env['ENV']['HOME'] = os.environ['HOME']
+env['ENV']['NWCHEM_BASIS_LIBRARY'] = basis
 
 # NWChem keys file stuff
 keys_base = 'base-keys.txt'
@@ -73,22 +84,49 @@ def xyz_to_nw(target, source, env):
         
 		f.write(baseContents)
 
+# Define the Python action function
+def run_nwchem_and_cleanup(target, source, env):
+    source_base = os.path.splitext(str(source[0]))[0]
+
+    nwchem_cmd = f"{nwchem} \"{source[0]}\" > \"{source_base}.out\""
+    result = env.Execute(nwchem_cmd)
+
+    if result != 0:
+        print(f"NWChem command failed for {source[0]}. Exiting cleanup.")
+        return result # Propagate the error to SCons
+
+    # List of files to attempt to remove
+    files_to_clean = [
+        f"{source_base}.gridpts.0",
+        f"{source_base}.aoints.0",
+        f"{source_base}.b",
+        f"{source_base}.b^-1",
+        f"{source_base}.c",
+        f"{source_base}.junk",
+        f"{source_base}.cosmo.xyz",
+        f"{source_base}.db",
+        f"{source_base}.p",
+        f"{source_base}.zmat",
+        f"{source_base}.movecs"
+    ]
+
+    # Remove temporary files using os.remove for cross-platform compatibility
+    for f in files_to_clean:
+        if os.path.exists(f):
+            try:
+                os.remove(f)
+                print(f"Cleaned: {f}")
+            except Exception as e:
+                print(f"Warning: Could not remove {f}: {e}")
+        # else:
+            # print(f"File not found, skipping: {f}") # Optional: for debugging
+
+    return 0 # Indicate success
+
+
 # Our custom builders
 xyzToNw = Builder(action = xyz_to_nw, suffix = '.nw', single_source=True)
-nwchemCosmo = Builder(action = nwchem + ' \"$SOURCE\" > \"${SOURCE.base}.out\"; ' +
-                      'grep -q "failed" \"${SOURCE.base}.out\" && rm \"${SOURCE.base}.cosmo\"; ' + # delete the result if failed
-					  'rm -f ' +
-                      ' \"${SOURCE.base}\".gridpts.0 ' +
-					  ' \"${SOURCE.base}\".aoints.0 ' +
-					  ' \"${SOURCE.base}\".b' +
-					  ' \"${SOURCE.base}\".b^-1' +
-					  ' \"${SOURCE.base}\".c' +
-					  ' \"${SOURCE.base}\".cosmo.xyz' +
-					  ' \"${SOURCE.base}\".db' +
-					  ' \"${SOURCE.base}\".p' +
-					  ' \"${SOURCE.base}\".zmat' +
-  					  ' \"${SOURCE.base}\".movecs'
-					  ,suffix = '.cosmo', single_source=True)
+nwchemCosmo = Builder(action = run_nwchem_and_cleanup, suffix = '.cosmo', single_source=True)
 
 env.Append(BUILDERS = {'XYZToNw' : xyzToNw})
 env.Append(BUILDERS = {'NwToCosmo' : nwchemCosmo})

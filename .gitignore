@@ -24,3 +24,6 @@
 /pm6*
 /svp*
 /dimer**
+cosmo/**/*.xyz
+cosmo/**/*.cosmo
+**.dblite
