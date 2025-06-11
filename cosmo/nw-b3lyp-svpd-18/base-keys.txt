@@ -6,6 +6,7 @@ ecp noprint
   Pd library def2-ecp
   I  library def2-ecp
   Xe library def2-ecp
+  Rn library def2-ecp
 end
 
 dft

@@ -17,7 +17,7 @@ import os
 if sys.platform.startswith('linux'):
     # Linux paths
     nwchem = f"{os.environ['HOME']}/git/nwchem/bin/LINUX64/nwchem"
-    basis = f"{os.environ['HOME']}/git/nwchem/src/basis/libraries"
+    basis = f"{os.environ['HOME']}/git/nwchem/src/basis/libraries/"
 elif sys.platform.startswith('win'):
     # Windows paths
     nwchem = 'C:/Users/rafae/nwchem/nwchem.exe'
