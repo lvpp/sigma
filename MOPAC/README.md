@@ -1,5 +1,7 @@
 # MOPAC INSTRUCTIONS
 
+This is deprecated and will be removed in the future.
+
 ## INSTALATION GUIDE
 
 This is a quick tutorial on how to install MOPAC on Ubuntu OS 2016.04 LTS.

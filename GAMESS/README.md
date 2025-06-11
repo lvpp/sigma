@@ -1,5 +1,9 @@
 # GAMESS INSTRUCTIONS
 
+This is deprecated and will be removed in the future.
+Please check the [cosmo folder](https://github.com/lvpp/sigma/tree/master/cosmo) for instructions
+on how to process your own molecules.
+
 ## INSTALATION GUIDE
 
 Currently we have instructions for Ubuntu Linux machines only and GAMESS Apr202017R1.

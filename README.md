@@ -2,12 +2,12 @@
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3924076.svg)](https://doi.org/10.5281/zenodo.3924076)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3613786.svg)](https://doi.org/10.5281/zenodo.3613786)
 
-This is the LVPP sigma-profile database for COSMO-based models. It currently contains information for more than **1700 molecules** as well as [**COSMO-SAC parametrizations**](https://github.com/lvpp/sigma/tree/master/pars).
+This is the LVPP sigma-profile database for COSMO-based models. It currently contains information for more than **2500 molecules** as well as [**COSMO-SAC parametrizations**](https://github.com/lvpp/sigma/tree/master/pars).
 
 For the COSMO-SAC parametrizations, check the [pars](https://github.com/lvpp/sigma/tree/master/pars) folder.
 
-Currently, in this repository we only provide the COSMO apparent surface charges computed either with
-[GAMESS](http://www.msg.ameslab.gov/gamess/) or [MOPAC](http://openmopac.net/).
+In the latest version, COSMO surface charge densities are computed with [NWChem](https://nwchemgit.github.io/).
+Previous versions used [GAMESS](http://www.msg.ameslab.gov/gamess/) and [MOPAC](http://openmopac.net/).
 
 You will still need [JCOSMO](https://www.ufrgs.br/lvpp/download/jcosmo/) other software to actually compute activity coefficients or other properties with models like COSMO-RS or COSMO-SAC.
 
@@ -21,11 +21,7 @@ We kindly ask you to cite this work as:
 ## Using
 The *processed* database is made available in ZIP files, check the [releases](http://github.com/lvpp/sigma/releases).
 Just download one of the release files, uncompress and look for the molecule you need.
-[JCOSMO](https://www.ufrgs.br/lvpp/download/jcosmo/) can be used to view the 3D apparent surface charge densities.
-
-Currently we have the following releases:
-* HF+TZVP using GAMESS
-* POA1 using MOPAC
+[JCOSMO](https://www.ufrgs.br/lvpp/download/jcosmo/) can be used to view the 3D apparent surface charge densities, sigma-profiles, phase equilibrium calculations and more.
 
 ## Extending the database
 
@@ -35,7 +31,7 @@ There are different methods to extend the database.
 
 Just create and [new issue](https://github.com/lvpp/sigma/issues)
 and describe the molecules you need that are missing.
-If possible also attach a **3D mol** file for each molecule you want added.
+If possible, also attach a **3D mol** file for each molecule you want added.
 It can take a while until we process your request.
 
 ### Process your own molecules
@@ -44,12 +40,10 @@ If you can't wait for us to process your molecules (or if you don't want to)
 you can can **process** your own molecules.
 
 Just **clone** or [download](https://github.com/lvpp/sigma/archive/master.zip) this repository and then
-please check either the [GAMESS](https://github.com/lvpp/sigma/tree/master/GAMESS)
-or the [MOPAC](https://github.com/lvpp/sigma/tree/master/MOPAC) folders for instructions
+please check either the [cosmo folder](https://github.com/lvpp/sigma/tree/master/cosmo) for instructions
 on how to process your own molecules.
 
-Our instructions are for Ubuntu Linux 16.04 or superior. They probably should also
-work on other similar systems.
+Our instructions are for Ubuntu Linux 24.04 or superior. They should also work on other similar systems.
 
 ## License
 
