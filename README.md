@@ -9,7 +9,7 @@ For the COSMO-SAC parametrizations, check the [pars](https://github.com/lvpp/sig
 In the latest version, COSMO surface charge densities are computed with [NWChem](https://nwchemgit.github.io/).
 Previous versions used [GAMESS](http://www.msg.ameslab.gov/gamess/) and [MOPAC](http://openmopac.net/).
 
-You will still need [JCOSMO](https://www.ufrgs.br/lvpp/download/jcosmo/) other software to actually compute activity coefficients or other properties with models like COSMO-RS or COSMO-SAC.
+You will still need [JCOSMO](https://www.ufrgs.br/lvpp/download/jcosmo/) or other software to actually compute activity coefficients or other properties with models like COSMO-RS or COSMO-SAC.
 
 ## Citing
 We kindly ask you to cite this work as:
