@@ -1,0 +1,171 @@
+# www.scons.org script files for COSMO computations using GAMESS
+#
+# Use "nohup" to run from ssh and keep running after logout
+
+import psutil
+import time
+import sys
+import os
+import shutil
+import re
+
+
+def checkIfGamessRunning(processName):
+	'''
+	Check if there is any running process that contains the given name processName.
+	'''
+	#Iterate over the all the running process
+	for proc in psutil.process_iter():
+		try:
+			# Check if process name contains the given name string.
+			if processName.lower() in proc.name().lower():
+				return True
+		except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+			pass
+	return False;
+
+if checkIfGamessRunning('gamess.00.x'):
+	print('GAMESS is already running on this machine, exiting...')
+	sys.exit()
+
+env = Environment()
+
+env['ENV']['USER'] = os.environ['USER']
+env['ENV']['HOME'] = os.environ['HOME']
+
+# GAMESS keys file stuff, keys files generated from the base-keys.gamess file
+keys_base = 'base-keys.gamess'
+keys_cosmo = 'keys_cosmo.gamess'
+keys_cosmo_p1 = 'keys_cosmo_p1.gamess'
+keys_cosmo_m1 = 'keys_cosmo_m1.gamess'
+# creating the charge files
+file = open(keys_base,'r')
+baseContents = file.read()
+file.close()
+
+# Base configuration plus optimization
+internalCoord = '\n! Internal Coordinates, for faster convergence\n! See http://molecularmodelingbasics.blogspot.com/2009/07/\n! some-gamess-input-basics_24.html\n $CONTRL nzvar=1 $END\n $zmat dlc=.t. auto=.t. $END\n'
+cosmoKeys = '\n! Run COSMO on perfect conductor\n $COSGMS PRFCND=.TRUE. $end\n! Specifying RSOLV\n $COSGMS COSRAD = 1.4 $end\n'
+
+# The file for linear molecules, with optimization
+file = open(keys_cosmo,'w')
+file.write(baseContents + cosmoKeys)
+file.close()
+
+# File for cations
+file = open(keys_cosmo_p1,'w')
+file.write(baseContents + cosmoKeys + '\n $CONTRL ICHARG=+1 $END')
+file.close()
+
+# File for anions
+file = open(keys_cosmo_m1,'w')
+file.write(baseContents + cosmoKeys + '\n $CONTRL ICHARG=-1 $END')
+file.close()
+
+# Gamess stuff
+babelXYZToInpCosmo = Builder(action = 'obabel -i xyz $SOURCE -o gamin -xf ' + keys_cosmo + ' -O $TARGET; [ ! -f ${SOURCE}.keys ] || cat ${SOURCE}.keys >> $TARGET', suffix = '.inp', single_source=True)
+babelXYZToInpCosmo_p1 = Builder(action = 'obabel -i xyz $SOURCE -o gamin -xf ' + keys_cosmo_p1 + ' -O $TARGET', suffix = '.inp', single_source=True)
+babelXYZToInpCosmo_m1 = Builder(action = 'obabel -i xyz $SOURCE -o gamin -xf ' + keys_cosmo_m1 + ' -O $TARGET', suffix = '.inp', single_source=True)
+
+# Gamess also produces a .dat file
+def gamess_targets(target, source, env):
+		   target.append('$HOME/src/gamess/$TARGET.dat')
+		   return target, source
+
+gamessCosmo = Builder(action = os.environ['HOME'] + '/src/gamess/rungms $SOURCE > $TARGET', suffix = '.gamout',
+		single_source=True) # , emitter = gamess_targets)
+
+env.Append(BUILDERS = {'BabelXYZToInpCosmo' : babelXYZToInpCosmo})
+env.Append(BUILDERS = {'BabelXYZToInpCosmo_p1' : babelXYZToInpCosmo_p1})
+env.Append(BUILDERS = {'BabelXYZToInpCosmo_m1' : babelXYZToInpCosmo_m1})
+env.Append(BUILDERS = {'GamessCosmo' : gamessCosmo})
+
+def extract_gout(target, source, env):
+	f = open(source[0].rstr(), "r")
+	content = f.read()
+	f.close()
+		
+	f = open(target[0].rstr(), "w")
+	#filter only the relevant information
+	try:    
+		gamess_version = re.search('directory...(.*?)SINCE', content, flags=re.S).group(1)
+		inputs_cards = re.search('EXECUTION\ OF\ GAMESS(.*?)MEMORY\ AVAILABLE\s', content, flags=re.S).group(0)
+		geometry_input = re.search('RUN\ TITLE(.*?)ATOMIC\ BASIS\ SET', content, flags=re.S).group(1)
+		cavity = re.search('DEFINITION\ OF\ CAVITY(.*?)PROPERTIES', content, flags=re.S).group(1)
+		try:
+			geometry_coordinates = re.search('\s\s\s\s\s\*\*\*\*\*\s(.*?)INTERNUCLEAR', content, flags=re.S).group(1)
+		except AttributeError:
+			geometry_coordinates = ''
+		sigma_profile = re.search('COSab(.*?)gracefully', content, flags=re.S).group(0)
+
+		print(len(gamess_version))
+		print(len(inputs_cards))	
+		print(len(geometry_input))	
+		print(len(cavity))	
+		print(len(geometry_coordinates))	
+		print(len(sigma_profile))	
+		
+		final_file = gamess_version + inputs_cards + geometry_input + cavity + "\n       ***** " + geometry_coordinates + sigma_profile
+		# creates a new file .gout
+		f.write(final_file)
+
+	except AttributeError:
+		gamess_version = ''
+		inputs_cards = ''
+		cavity = ''
+		sigma_profile = ''
+
+	f.close()    
+
+bld = Builder(action = extract_gout, suffix = '.gout', src_suffix = '.gamout',
+single_source=True)
+env.Append(BUILDERS = {'Gout' : bld})
+
+
+# If in dist mode, copy all mol files to this folder and build all
+dist = ARGUMENTS.get('dist', 0)
+if dist == 'true':
+	xyzsrc = Glob('../../geometry/bp86-svp/*.xyz')
+	env.Execute(Install('.', xyzsrc))
+
+
+xyzfiles = Glob('*.xyz*')
+files = []
+files_big = []
+files_p1 = []
+files_m1 = []
+for fi in xyzfiles :
+	goutfile = os.path.splitext(fi.rstr())[0] + '.gamout'
+	if os.path.exists(goutfile) :
+		print('skipping ' + goutfile)
+		continue
+	if str(fi).endswith("+1.xyz") :
+		files_p1.append(fi)
+	elif str(fi).endswith("-1.xyz") :
+		files_m1.append(fi)
+	else :
+		files.append(fi)
+
+# Convert xyz files to gamess input
+inpCosmoFiles = env.BabelXYZToInpCosmo(files)
+inpCosmoFiles+= env.BabelXYZToInpCosmo_p1(files_p1)
+inpCosmoFiles+= env.BabelXYZToInpCosmo_m1(files_m1)
+gamoutFiles = env.GamessCosmo(inpCosmoFiles)
+env.Depends(inpCosmoFiles, ['base-keys.gamess'])
+
+goutFiles = env.Gout(gamoutFiles)
+env.Default(goutFiles)
+
+# Build all files for Gamess
+# Delete all DAT files, otherwise gamess will stop
+delAction = Delete(Glob(os.environ['HOME'] + '/src/gamess/scr/*.dat') + Glob('/tmp/*.dat'))
+Execute(delAction)
+
+basedir = os.path.basename(os.path.abspath('.'))
+
+if dist == 'true':
+	molfiles = Glob('*.gout')
+	# Zip all .gout by default if in 'dist' mode
+	zipAction = env.Zip('../../bp86-d2svp.zip', molfiles)
+	env.Default(zipAction)
+
