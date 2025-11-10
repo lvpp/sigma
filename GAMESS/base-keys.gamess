@@ -2,22 +2,27 @@
  $contrl scftyp=rhf $end
 
 ! THEORY: HF OR DFT
-! $contrl mplevl=0 $end
- $DFT DFTTYP=BP86 $END
+ $contrl mplevl=0 $end
 
  $system timlim=10000 mwords=20 $end
  $SCF DIRSCF=.TRUE. $end
 
-! BASIS SET
-! https://github.com/shoubhikraj/molecular-modelling/tree/main/basis-sets
+! BASIS SETS
+! KTZVP
  $contrl ISPHER=1 $END
- $BASIS GBASIS=d2tzvp EXTFIL=.t. $END
+ $BASIS GBASIS=KTZVP $END
 
 ! One of the following
  $guess guess=HUCKEL $end
 
  $statpt projct=.FALSE. $end
 ! $STATPT IFREEZ(1)=1,2,3 $END
+
+! Run COSMO on perfect conductor
+ $COSGMS PRFCND=.TRUE. $end
+
+! Specifying RSOLV
+ $COSGMS COSRAD = 1.4 $end
 
 ! available memory
  $SYSTEM MWORDS=500 $END
