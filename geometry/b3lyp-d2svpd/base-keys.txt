@@ -2,9 +2,55 @@ basis spherical noprint
   *   library def2-svpd
 end
 ecp noprint
+  Rb library def2-ecp
+  Sr library def2-ecp
+  Y  library def2-ecp
+  Zr library def2-ecp
+  Nb library def2-ecp
+  Mo library def2-ecp
+  Tc library def2-ecp
+  Ru library def2-ecp
+  Rh library def2-ecp
   Pd library def2-ecp
+  Ag library def2-ecp
+  Cd library def2-ecp
+  In library def2-ecp
+  Sn library def2-ecp
+  Sb library def2-ecp
+  Te library def2-ecp
   I  library def2-ecp
   Xe library def2-ecp
+  Cs library def2-ecp
+  Ba library def2-ecp
+  La library def2-ecp
+  Ce library def2-ecp
+  Pr library def2-ecp
+  Nd library def2-ecp
+  Pm library def2-ecp
+  Sm library def2-ecp
+  Eu library def2-ecp
+  Gd library def2-ecp
+  Tb library def2-ecp
+  Dy library def2-ecp
+  Ho library def2-ecp
+  Er library def2-ecp
+  Tm library def2-ecp
+  Yb library def2-ecp
+  Lu library def2-ecp
+  Hf library def2-ecp
+  Ta library def2-ecp
+  W  library def2-ecp
+  Re library def2-ecp
+  Os library def2-ecp
+  Ir library def2-ecp
+  Pt library def2-ecp
+  Au library def2-ecp
+  Hg library def2-ecp
+  Tl library def2-ecp
+  Pb library def2-ecp
+  Bi library def2-ecp
+  Po library def2-ecp
+  At library def2-ecp
   Rn library def2-ecp
 end
 
