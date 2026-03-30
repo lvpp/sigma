@@ -58,7 +58,7 @@ def mol_to_nw(target, source, env):
     nwchem_file = target[0].rstr()
 
     # Load molecule from .mol file
-    mol = Chem.MolFromMolFile(mol_file, removeHs=False)
+    mol = Chem.MolFromMolFile(mol_file, removeHs=False, strictParsing=False)
 
     if mol is None:
         SCons.Errors.BuildError(node=target[0], errstr="Could not parse the .mol file.")
