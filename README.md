@@ -1,11 +1,12 @@
-# LVPP sigma-profile database + COSMO-SAC parametrizations
+# LVPP sigma-profile database
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3924076.svg)](https://doi.org/10.5281/zenodo.3924076)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3613786.svg)](https://doi.org/10.5281/zenodo.3613786)
 [![DOI](https://img.shields.io/badge/DOI-10.1021%2Facs.jctc.5c01368-blue)](https://doi.org/10.1021/acs.jctc.5c01368)
 
-This is the LVPP sigma-profile database for COSMO-based models. It currently contains information for more than **2500 molecules** as well as [**COSMO-SAC parametrizations**](https://github.com/lvpp/sigma/tree/master/pars).
-
-For the COSMO-SAC parametrizations, check the [pars](https://github.com/lvpp/sigma/tree/master/pars) folder.
+This is the LVPP sigma-profile database for COSMO-based models. It currently contains:
+ - Ready to use COSMO surface charge densities for more than **2500 molecules**.
+ - [**COSMO-SAC parametrizations**](./pars/) for different variants.
+ - [**Optimized gas phase geometries**](./geometry/).
 
 In the latest version, COSMO surface charge densities are computed with [NWChem](https://nwchemgit.github.io/).
 Previous versions used [GAMESS](http://www.msg.ameslab.gov/gamess/) and [MOPAC](http://openmopac.net/).
