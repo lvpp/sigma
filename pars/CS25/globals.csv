@@ -1,14 +1,10 @@
 Parameter,Value,Lower,Upper,Opt.,Comment
-NOTE,d2svpd rt18 direct AVG,1,1,false,
 BETA,1,1,1,false,
 RAVG,.8,0.5,2,false,
 RPOWER,.67,0,1,false,
 FPOL,0.9558312004213705,0.2,2,false,
-FPOLB,0,0,100,false,
-FPOLC,0,0.2,2,false,
 REFF,1.215833780872058,0.5,2,false,
 CHB,0.3174836752105409,0,1,false,water-water
-CHBT,0,-0.1,0.1,false,
 CHB2,0.3607333637106489,0,1,false,water-alcohol
 CHB3,0.13402906554479208,0,1,false,water-ketone
 CHB7,0.24588405414598852,0,1,false,water-ether
@@ -16,11 +12,8 @@ CHB9,.3637,0,1,false,water-amine
 CHB11,0.20389074869554022,0,1,false,water-F+
 CHB4,0.4819408607292504,0,1,false,alcohol-water
 CHB5,0.562676628537871,0,1,false,alcohol-alcohol
-CHBT5,0,-0.1,0.1,false,
 CHB6,0.374658181189941,0,1,false,alcohol-ketone
 CHB8,0.30452940516762,0,1,false,alcohol-ether
 CHB10,0.6016408962719957,0,1,false,alcohol-amine
 CHB12,0.4121751201309518,0,1,false,alcohol-F+
-CHB13,0,0,1,false,chloroform-X
 SIGMAHB,0.011,0.005,0.015,false,
-CHB2-WATER-TRIETHYLENE_GLYCOL,0.58,0,1,false,
