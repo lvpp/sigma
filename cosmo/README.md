@@ -12,10 +12,10 @@ This guide provides installation instructions for 64 bit Ubuntu Linux 24.04.
 sudo apt install nwchem scons
 ```
 
-Future versions of NWChem may include the necessary features to build sigma-LVPP COSMO files.  
+NWChem version 7.3.0 and up include the necessary features to build sigma-LVPP COSMO files.  
 For now, you will likely need to compile it from source, as described below.
 
-### Option 2: Compile Modified NWChem Sources
+### Option 2: Compile NWChem from Source
 
 #### Step 1: Install Required Packages
 
@@ -23,13 +23,13 @@ For now, you will likely need to compile it from source, as described below.
 sudo apt install gfortran libopenmpi-dev scons
 ```
 
-#### Step 2: Clone the LVPP-Modified NWChem Repository
+#### Step 2: Clone the master NWChem Repository
 
 ```bash
-git clone --single-branch --branch ses https://github.com/lvpp/nwchem.git
+git clone https://github.com/nwchemgit/nwchem.git
 ```
 
-This command clones the LVPP-modified version of NWChem, which includes the SES (solvent-excluding surface) feature.
+This command clones the master repository of NWChem, which includes the SES (solvent-excluding surface) feature.
 
 #### Step 3: Set the NWChem top folder
 
@@ -98,7 +98,7 @@ Copy or save `.xyz` files for all molecules you want to use in the COSMO calcula
 ### Run SCons
 
 ```bash
-scons -j 6
+scons -k -j 6
 ```
 
 This executes up to 6 parallel jobs. Each `.xyz` file generates one `.cosmo` output.
