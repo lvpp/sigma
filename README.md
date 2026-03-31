@@ -1,6 +1,5 @@
 # LVPP sigma-profile database
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3924076.svg)](https://doi.org/10.5281/zenodo.3924076)
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3613786.svg)](https://doi.org/10.5281/zenodo.3613786)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3613785.svg)](https://doi.org/10.5281/zenodo.3613785)
 [![DOI](https://img.shields.io/badge/DOI-10.1021%2Facs.jctc.5c01368-blue)](https://doi.org/10.1021/acs.jctc.5c01368)
 
 This is the LVPP sigma-profile database for COSMO-based models. It currently contains:
@@ -16,8 +15,7 @@ You will still need [JCOSMO](https://www.ufrgs.br/lvpp/download/jcosmo/) or othe
 ## Citing
 We kindly ask you to cite this work as:
  * "[Recent Improvements to the NWChem COSMO Module](https://doi.org/10.1021/acs.jctc.5c01368)", DOI:10.1021/acs.jctc.5c01368
- * "[LVPP sigma-profile database (20.06)](https://doi.org/10.5281/zenodo.3924076)", DOI:10.5281/zenodo.3924076
- * "[LVPP sigma-profile database (18.07)](https://doi.org/10.5281/zenodo.3613786)", DOI:10.5281/zenodo.3613786
+ * "[LVPP sigma-profile database](https://doi.org/10.5281/zenodo.3613785)", DOI:10.5281/zenodo.3613785
  * "[An open and extensible sigma-profile database for COSMO-based models](https://doi.org/10.1002/aic.16194)", F. Ferrarini, G. B. Flores, A. R. Muniz, and R. de P. Soares (2018), AIChE J.
  * "[Assessing the reliability of predictive activity coefficient models for molecules consisting of several functional groups](http://dx.doi.org/10.1590/S0104-66322013000100002)", R. P. Gerber and R. P. Soares (2013), Braz. J. Chem. Eng. Vol. 30, No. 01
 
