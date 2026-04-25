@@ -1,0 +1,46 @@
+import os
+import glob
+
+env = Environment()
+
+# 1. Find the starting .mol file
+all_mols = glob.glob('*.mol')
+
+# Safely ignore any dynamically generated files containing '@' 
+# to prevent SCons from getting stuck in a recursive loop
+input_files = [f for f in all_mols if '@' not in f]
+
+if not input_files:
+    print("Error: No starting .mol file found in the root directory.")
+    Exit(1)
+elif len(input_files) > 1:
+    # Joins the list of found files into a string so you know exactly what is causing the conflict
+    found_files = ", ".join(input_files)
+    print(f"Error: Found multiple starting .mol files ({found_files}). Please keep exactly one in the root directory.")
+    Exit(1)
+    
+input_mol = input_files[0]
+# Extract the base name
+base_name = os.path.splitext(input_mol)[0] 
+print(f"SCons: Using '{input_mol}' as the starting geometry.")
+
+# 2. Run CREST
+crest_targets = ['crest_conformers.xyz', f'{base_name}.deg']
+crest_cmd = f'crest $SOURCE -gfn2 -T 6 > {base_name}.crest && mv cre_members {base_name}.deg'
+env.Command(crest_targets, input_mol, crest_cmd)
+
+# 3. Split with OpenBabel
+# We know OpenBabel will ALWAYS produce at least the first index (@1)
+primary_conformer = f'{base_name}@1.mol'
+
+# OpenBabel inserts the number exactly where the extension begins
+split_cmd = f'obabel $SOURCE -O {base_name}@.mol -m'
+
+split_step = env.Command(primary_conformer, crest_targets[0], split_cmd)
+
+# 4. Cleanup Instructions (Updated for new file names)
+env.Clean(split_step, Glob(f'{base_name}@*.mol'))
+env.Clean(crest_targets[0], Glob('crest_*')) 
+env.Clean(crest_targets[0], 'gfn2_topo')
+
+env.Default(split_step)
