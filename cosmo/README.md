@@ -4,7 +4,7 @@
 
 Starting with the sigma-LVPP 2025 release, we use [NWChem](https://nwchemgit.github.io/) to generate COSMO files and sigma-profiles.
 
-This guide provides installation instructions for 64 bit Ubuntu Linux 24.04.
+This guide provides installation instructions for 64 bit Ubuntu Linux 26.04.
 
 ### Option 1: Install from Package Manager
 
@@ -13,7 +13,7 @@ sudo apt install nwchem scons
 ```
 
 NWChem version 7.3.0 and up include the necessary features to build sigma-LVPP COSMO files.  
-For now, you will likely need to compile it from source, as described below.
+This version is available in Ubuntu Linux 26.04 and newer.
 
 ### Option 2: Compile NWChem from Source
 
